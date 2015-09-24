@@ -15,8 +15,8 @@ def get_app(settings=None,extensions=[],*args,**kwargs):
     if extensions:
         for e in extensions:
             e.init_app(app)
-    router = FlaskRouter(app)
     apps = FlaskApps(app)
+    router = FlaskRouter(app)
     loader = FlaskTemplateLoader(app)
 
     return app
