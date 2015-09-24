@@ -8,7 +8,7 @@ class Config(object):
         'flask_tasks.projects.urls.routes',
         'flask_tasks.admin.urls.routes',
         'flask_tasks.tasks.api.urls.routes',
-        'flask_tasks.projects.api.urls.routes',
+        'flask_tasks.projects.projects_api.urls.routes',
     ]
 
     VERBOSE = True
@@ -18,7 +18,7 @@ class Config(object):
     INSTALLED_BLUEPRINTS = [
         'flask_tasks.tasks',
         'flask_tasks.projects',
-        'flask_tasks.projects.api',
+        'flask_tasks.projects.projects_api',
         'flask_tasks.admin',
         'flask_tasks.tasks.api'
     ]

@@ -1,5 +1,4 @@
 from flask import views,jsonify,request
-import requests
 from inflection import pluralize
 import json
 from ..models import Project
@@ -20,7 +19,6 @@ class ListProjectView(views.MethodView):
         return jsonify({result_key:rtn})
 
 class ListTasksByProjectView(views.MethodView):
-
     def get(self,item_id):
         proj = Project.get_by_id(item_id)
         result = dict(project=proj.to_json(),tasks=[])
@@ -34,43 +32,10 @@ class ListTasksByProjectView(views.MethodView):
             result['tasks'] = map(lambda x: x.to_json(),tasks)
         return jsonify(**result)
 
-def AddProjectView(PostView):
-
+class AddProjectView(PostView):
     def post(self):
         self._process_post()
         proj = Project(**self.data).save().to_json()
         return jsonify(**proj)
 
 
-        
-'''
-class PostView(views.MethodView):
-    def _process_post(self):
-        self.data = ((request.data and json.loads(request.data)) if not request.form else dict(request.form.items())) if not request.mimetype == 'application/json' else request.json
-
-class AddTaskView(PostView):
-    def post(self):
-        self._process_post()
-        data = Task(**self.data).save().to_json()
-        return jsonify(res=data)
-
-class CompleteTaskView(PostView):
-    def post(self):
-        result = dict(success=True,error=None)
-        self._process_post()
-        task = Task.get_by_id(self.data.get('task_id'))
-        if task is not None:
-            if not task.complete:
-                task.complete = True
-                task.save()
-            else:
-                result = dict(success=False,error='task already complete')
-        else:
-            result = dict(success=False,error='task with id {} not found'.format(self.data.get('task_id')))
-        return jsonify(result)
-
-
-            
-
-
-'''

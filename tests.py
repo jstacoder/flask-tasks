@@ -10,6 +10,11 @@ from flask_tasks.tasks.models import Task
 from flask_tasks.projects.models import Project
 from seed import seed
 
+
+excludes = [
+    'url','tasks'
+        ]
+
 TASK_VIEW_API_RESPONSE = { 
         u'task': {
             u'complete': False,
@@ -22,6 +27,11 @@ TASK_VIEW_API_RESPONSE = {
             }
 }
 
+ADD_PROJ_API_RESPONSE = {
+            u'id': 2,
+            u'name': u"test2",
+}
+        
 ADD_TASK_API_RESPONSE = {
     u'complete': False,
     u'id': 11,
@@ -86,30 +96,24 @@ class TestTaskApiTestCase(TestCase):
         res.get('project').pop('tasks')
         self.assertEqual(res,PROJ_VIEW_API_RESPONSE)
                         
-    def test_add_form(self):
-        data = dict(name='task12')
-        res = self.client.post('/api/v1/tasks/add',data=data).data
-        res = json.loads(res)
-        res.pop('url')
-        expecting = ADD_TASK_API_RESPONSE
-        self.assertEquals(res,expecting)
+    def test_add_project_form(self):
+        self._test_add_form('projects',ADD_PROJ_API_RESPONSE,excludes=excludes
+                ,name='test2')
 
-    def test_add_data(self):
-        data = dict(name='task12')
-        res = self.client.post('/api/v1/tasks/add',data=json.dumps(data)).data
-        res = json.loads(res)
-        res.pop('url')
-        expecting = ADD_TASK_API_RESPONSE
-        self.assertEquals(res,expecting)
+    def test_add_project_data(self):
+        self._test_add_data('projects',ADD_PROJ_API_RESPONSE,excludes=excludes,name='test2')
 
+    def test_add_project_json(self):
+        self._test_add_json('projects',ADD_PROJ_API_RESPONSE,excludes=excludes,name='test2')
 
-    def test_add_json(self):
-        data = json.dumps(dict(name='task12'))
-        res = self.client.post('/api/v1/tasks/add',data=data,content_type='application/json',content_length=len(data)).data
-        res = json.loads(res)
-        res.pop('url')
-        expecting = ADD_TASK_API_RESPONSE
-        self.assertEquals(res,expecting)
+    def test_add_task_form(self):
+        self._test_add_form('tasks',ADD_TASK_API_RESPONSE,excludes=excludes,name='task12')
+
+    def test_add_task_data(self):
+        self._test_add_data('tasks',ADD_TASK_API_RESPONSE,excludes=excludes,name='task12')
+
+    def test_add_task_json(self):
+        self._test_add_json('tasks',ADD_TASK_API_RESPONSE,excludes=excludes,name='task12')
 
     def test_complete_task(self):
         data = dict(task_id=5)
@@ -121,3 +125,37 @@ class TestTaskApiTestCase(TestCase):
         self.client.post('/api/v1/tasks/complete',data=data)
         res = self.client.get('/api/v1/tasks/view/5').data
         self.assertTrue(json.loads(res)['task']['complete'])
+
+    def _test_add_form(self,model,expected_response,excludes=None,**kwargs):
+        data = dict(**kwargs)
+        res = self.client.post('/api/v1/{0}/add'.format(model),data=data).data    
+        res = json.loads(res)
+        if excludes:
+            for itm in excludes:
+                if itm in res:
+                    res.pop(itm)
+        expecting = expected_response
+        self.assertEquals(res,expecting)
+
+    def _test_add_data(self,model,expected_response,excludes=None,**kwargs):
+        data = dict(**kwargs)
+        res = self.client.post('/api/v1/{0}/add'.format(model),data=json.dumps(data)).data
+        res = json.loads(res)
+        if excludes:
+            for itm in excludes:
+                if itm in res:
+                    res.pop(itm)
+        expecting = expected_response
+        self.assertEquals(res,expecting)
+
+    def _test_add_json(self,model,expected_response,excludes=None,**kwargs):
+        data = json.dumps(dict(**kwargs))
+        res = self.client.post('/api/v1/{0}/add'.format(model),data=data,content_type='application/json',content_length=len(data)).data
+        res = json.loads(res)
+        if excludes:
+            for itm in excludes:
+                if itm in res:
+                    res.pop(itm)
+        expecting = expected_response
+        self.assertEquals(res,expecting)
+
