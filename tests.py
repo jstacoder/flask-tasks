@@ -1,8 +1,4 @@
 import json
-try:
-    from flask import _app_ctx_stack as ctx
-except:
-    from flask import _request_ctx_stack as ctx
 from flask_tasks.messages import socket
 from unittest import TestCase
 from flask_tasks import get_app,settings,models
@@ -73,13 +69,11 @@ class TestTaskApiTestCase(TestCase):
         res = self.client.get('/api/v1/tasks/list').data
         res = json.loads(res)
         res['tasks'] = process_tasks(res['tasks'])
-        print res
         self.assertEquals(res,{'tasks':process_tasks(map(lambda x: x.to_json(add_urls=False),Task.get_all()))})
 
     def test_list_all_projects(self):
         res = self.client.get('/api/v1/projects/list').data
         res = json.loads(res)
-        print res
         map(lambda proj: proj.pop('tasks'),res['projects'])
         self.assertEquals(res,{'projects':map(lambda x: x.to_json(add_urls=False),Project.get_all())})
 
@@ -97,8 +91,7 @@ class TestTaskApiTestCase(TestCase):
         self.assertEqual(res,PROJ_VIEW_API_RESPONSE)
                         
     def test_add_project_form(self):
-        self._test_add_form('projects',ADD_PROJ_API_RESPONSE,excludes=excludes
-                ,name='test2')
+        self._test_add_form('projects',ADD_PROJ_API_RESPONSE,excludes=excludes,name='test2')
 
     def test_add_project_data(self):
         self._test_add_data('projects',ADD_PROJ_API_RESPONSE,excludes=excludes,name='test2')
@@ -120,6 +113,30 @@ class TestTaskApiTestCase(TestCase):
         res = self.client.post('/api/v1/tasks/complete',data=data).data
         self.assertEqual(json.loads(res),dict(success=True,error=None))
 
+    def _send_add_request(self,model,data,content_type=None):
+        opts = {}
+        if content_type:
+            opts['content_type'] = content_type
+            if 'json' in content_type:
+                opts['content_length'] = len(data)
+        return json.loads(self.client.post('/api/v1/{0}/add'.format(model),data=data,**opts).data)
+
+    def test_add_project_then_task(self):
+        data = json.dumps(dict(name='test'))
+        res = self._send_add_request('projects',data,content_type='application/json')        
+        proj_id = res.get('id')
+        data = json.dumps(dict(name='test-task1',project_id=proj_id))
+        res = self._send_add_request('tasks',data,content_type='application/json')
+        task_id = res.get('id')
+        res = self.client.get('/api/v1/tasks/view/{0}'.format(task_id)).data
+        if res:
+            res = json.loads(res)
+            new_proj_id =  res['task']['project']['id']
+        else:
+            print 'no res', res
+        self.assertEquals(new_proj_id,proj_id)
+
+
     def test_task_completed(self):
         data = dict(task_id=5)
         self.client.post('/api/v1/tasks/complete',data=data)
@@ -140,6 +157,7 @@ class TestTaskApiTestCase(TestCase):
     def _test_add_data(self,model,expected_response,excludes=None,**kwargs):
         data = dict(**kwargs)
         res = self.client.post('/api/v1/{0}/add'.format(model),data=json.dumps(data)).data
+        print res
         res = json.loads(res)
         if excludes:
             for itm in excludes:

@@ -3,7 +3,9 @@ from flask_tasks import get_app,settings
 from flask import current_app
 from flask_tasks.messages import socket
 
-manager = Manager(get_app(settings.Config,extensions=[socket]))
+create_app = lambda: get_app(settings.Config,extensions=[socket])
+manager = Manager(app=create_app)
+
 
 manager.add_command('urls',commands.ShowUrls())
 
@@ -15,7 +17,16 @@ def show_ext():
 @manager.command
 def show_methods():
     app = get_app(settings.Config,extensions=[socket])
+    seen = []
     for route in app.url_map.iter_rules():
-        print route.rule,route.methods
+        if not route in seen:
+            print route.rule,route.methods
+            seen.append(route)
 
-manager.run()
+@manager.command
+def blueprints():
+    print get_app(settings.Config,extensions=[socket]).blueprints.keys()
+
+if __name__ == "__main__":
+    manager.run()
+

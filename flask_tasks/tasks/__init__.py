@@ -1,3 +1,3 @@
 from flask import Blueprint
 
-tasks = Blueprint(__name__,'tasks',url_prefix='/tasks')
+tasks = Blueprint('tasks',__name__,url_prefix='/tasks')
