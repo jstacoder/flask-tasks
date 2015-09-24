@@ -1,3 +1,3 @@
 from flask import Blueprint
 
-admin = Blueprint(__name__,'admin',url_prefix='/admin')
+admin = Blueprint('admin',__name__,url_prefix='',template_folder='templates')

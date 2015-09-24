@@ -1,0 +1,24 @@
+<h2>Test admin page</h2>
+
+
+{% if project_count %}
+You have {{ projects|count }} active projects <br/>
+{% endif %}
+{% if tasks %}
+    You have {{ tasks }} active tasks
+{% endif %}
+
+{% if projects %}
+    {% for p in projects %}
+        <hr />
+        <h2>{{ p.name }} - <small>{{ p.tasks.count() }} tasks</small></h2>
+            {% for t in p.tasks.all() %}
+        <ul>
+                {% if not t.complete %}
+                    <li>{{ t.name }}</li>
+                    <li>Due On: {{ t.due_date }}</li>
+                {% endif %}
+        </ul>
+            {% endfor %}
+    {% endfor %}
+{% endif %}

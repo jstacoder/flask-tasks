@@ -13,4 +13,5 @@ if __name__ == "__main__":
             models.BaseMixin.metadata.drop_all()
             models.BaseMixin.metadata.create_all()
             seed()
+    app.debug = True
     app.run(host='0.0.0.0',port=5544,debug=True)
