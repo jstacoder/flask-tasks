@@ -12,4 +12,10 @@ def show_ext():
     print get_app(settings.Config,extensions=[socket]).extensions.keys()
 
 
+@manager.command
+def show_methods():
+    app = get_app(settings.Config,extensions=[socket])
+    for route in app.url_map.iter_rules():
+        print route.rule,route.methods
+
 manager.run()

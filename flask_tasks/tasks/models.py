@@ -15,11 +15,11 @@ class Task(BaseMixin):
 
     @classproperty
     def list_url(cls):
-        return url_for('flask_tasks.tasks.api.list_tasks',_external=True) 
+        return url_for('tasks_api.list_tasks',_external=True) 
 
     @classmethod
     def _get_project_list_url(cls,project_id):
-        return url_for('flask_tasks.projects.api.view_tasks_by_project',item_id=project_id)
+        return url_for('projects_api.view_tasks_by_project',item_id=project_id)
 
     def get_project_list_url(self):
         return self.__class__._get_project_list_url(self.project_id)
@@ -27,18 +27,20 @@ class Task(BaseMixin):
     
     @property
     def url(self):
-        return url_for('flask_tasks.tasks.api.view_task',item_id=self.id,_external=True)
+        return url_for('tasks_api.view_task',item_id=self.id,_external=True)
 
-    def to_json(self,in_list=True):
+    def to_json(self,in_list=True,add_urls=True):
         opts = {}
         if self.due_date:
             opts['due_date'] = self.due_date
         if self.project_id:
             opts['project'] = dict(
                     id=self.project_id,
-                    url=self.project.url
             )
-        if in_list:
+            if add_urls:
+                opts['project']['url'] = self.project.url
+        
+        if in_list and add_urls:
             opts['url'] = self.url
         return dict(
             id=self.id,
