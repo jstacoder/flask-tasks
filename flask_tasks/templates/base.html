@@ -1,0 +1,17 @@
+<html>
+    <head>{{ assets()|safe }}</head>
+    <body>
+        <div class="{% if container_class %}{{ container_class }}{% else %}container-fluid{% endif %}">
+            <div class=row>
+                <div class=col-md-12>
+                    {% block page_header %}{% endblock %}
+                </div>
+            </div>
+            <div class=row>
+                <div class="col-md-8 col-md-offset-2">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

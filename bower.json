@@ -1,0 +1,32 @@
+{
+  "name": "flask-tasks",
+  "version": "0.0.0",
+  "homepage": "https://github.com/jstacoder/flask-tasks",
+  "authors": [
+    "kyle roux <kyle@level2designs.com>"
+  ],
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.6",
+    "angular-route": "~1.4.6",
+    "angular-ui-bootstrap": "~0.13.4",
+    "bootstrap": "~3.3.5",
+    "angular-cache": "~4.3.2",
+    "angular-cookie": "~4.0.9",
+    "angular-resource": "~1.4.6",
+    "less.js": "~2.5.1"
+  },
+  "ignoredDependencies": [
+    "jquery#2.1.4"
+  ]
+}

@@ -1,24 +1,47 @@
-<h2>Test admin page</h2>
+{% extends base_template or 'base.html' %}
 
+{% block page_header %}
+    <h2>Test admin page</h2>
+    <div class=row>
+        <div class="col-md-8 col-md-offset-2">
+            <ul class="nav nav-pills">
+                <li class="active"><a href="/">Home</a></li>
+                <li><a href='/add-project'>add project</a></li>
+                <li><a href='/list-project'>list projects</a></li>
+                <li><a href='/archive'>project archives</a></li>                
+            </ul>
+        </div>
+    </div>
+{% endblock %}
 
-{% if project_count %}
-You have {{ projects|count }} active projects <br/>
-{% endif %}
-{% if tasks %}
-    You have {{ tasks }} active tasks
-{% endif %}
+{% block content %}
+    {% if project_count %}
+        You have {{ projects|count }} active projects <br/>
+    {% endif %}
+    {% if tasks %}
+        You have {{ tasks }} active tasks
+    {% endif %}
 
-{% if projects %}
-    {% for p in projects %}
-        <hr />
-        <h2>{{ p.name }} - <small>{{ p.tasks.count() }} tasks</small></h2>
-            {% for t in p.tasks.all() %}
-        <ul>
-                {% if not t.complete %}
-                    <li>{{ t.name }}</li>
-                    <li>Due On: {{ t.due_date }}</li>
-                {% endif %}
-        </ul>
-            {% endfor %}
-    {% endfor %}
-{% endif %}
+    {% if projects %}
+        {% for p in projects %}
+            <div class=row>                
+                <hr />
+                <h2>{{ p.name }} - <small>{{ p.tasks.count() }} tasks</small></h2>
+                {% for t in p.tasks.all() %}
+                    <div class=col-md-4>
+                        <div class="panel panel-default">
+                            <div class=panel-body>
+                                <ul class=list-unstyled>
+                                    {% if not t.complete %}
+                                        <li><h4 class="text-center lead">{{ t.name }}</h4></li>
+                                        <li class="text-center">Due On: <span class="label label-danger">{{ t.due_date|date_pretty }}</span></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
