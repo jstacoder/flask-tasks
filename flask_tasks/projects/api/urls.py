@@ -1,10 +1,10 @@
-from . import projects_api
+from . import api
 from .views import ListProjectView,ListTasksByProjectView,AddProjectView
 
 
 routes = [
             (
-            (projects_api),
+            (api),
                 ('/list','list_projects',ListProjectView),
                 ('/view/<item_id>','view_project',ListProjectView),
                 ('/view/<item_id>/tasks','view_tasks_by_project',ListTasksByProjectView),
