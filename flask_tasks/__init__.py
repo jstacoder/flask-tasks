@@ -36,6 +36,12 @@ def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kw
     if extensions:
         for e in extensions:
             e.init_app(app)
+    if reset_db is not None:
+        with app.test_request_context():
+            models.BaseMixin.metadata.bind = models.BaseMixin.engine
+            models.BaseMixin.engine.echo = True 
+            models.BaseMixin.metadata.drop_all(checkfirst=True)
+            models.BaseMixin.metadata.create_all(checkfirst=True)
     if add_default_extensions:
         router = FlaskRouter(app)
         apps = FlaskApps(app)
@@ -43,10 +49,4 @@ def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kw
 
     app.jinja_env.globals['assets'] = assets
     app.jinja_env.filters['date_pretty'] = date_pretty
-    if reset_db is not None:
-        with app.test_request_context():
-            models.BaseMixin.metadata.bind = models.BaseMixin.engine
-            models.BaseMixin.engine.echo = True 
-            models.BaseMixin.metadata.drop_all(checkfirst=True)
-            models.BaseMixin.metadata.create_all(checkfirst=True)
     return app
