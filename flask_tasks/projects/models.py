@@ -9,7 +9,11 @@ def last_project_id():
         ctx = get_app(settings.Config,add_default_extensions=False).test_request_context()
         ctx.push()
         pop = True
-    result =  max([x.id for x in Project.get_all()])
+    pids = [x.id for x in Project.get_all()]
+    if not pids:
+        result = 0
+    else:
+        result = max(pids)
     if pop:
         ctx.pop()
     return int(result)
