@@ -13,7 +13,7 @@ Flask-SocketIO==0.6.0
 Flask-SQLAlchemy==2.0
 flask-template-loader==0.0.3
 Flask-WTF==0.10.2
-flask-xxl==0.9.3
+flask-xxl==0.9.5
 gevent==1.0.2
 gevent-socketio==0.3.6
 gevent-websocket==0.9.5
