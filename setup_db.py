@@ -1,5 +1,15 @@
 
-def refresh_db(app,models,seed):
+
+
+def refresh_db(app=None,models=None,seed=None):
+    if app is None:
+        from flask_tasks import get_app,settings
+        app = get_app(settings.TestConfig,refresh_db=True)
+    if models is None:
+        from flask_tasks import models
+    if seed is None:
+        from seed import seed
+
     ctx = app.test_request_context()
     ctx.push()
     
@@ -13,4 +23,5 @@ def refresh_db(app,models,seed):
     
 
 
-
+if __name__ == "__main__":
+    refresh_db()
