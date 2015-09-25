@@ -8,10 +8,10 @@ import os
 if __name__ == "__main__":
     app = get_app(settings.Config)
     if os.environ.get('REFRESH_DB'):
+        #models.BaseMixin.engine.echo = True
         refresh_db(app,models,seed)
-    else:
-        app.debug = True
-        port = int(os.environ.get('PORT',5544))
-        app.run(host='0.0.0.0',port=port,debug=True)
+    app.debug = True
+    port = int(os.environ.get('PORT',5544))
+    app.run(host='0.0.0.0',port=port,debug=True)
 
 

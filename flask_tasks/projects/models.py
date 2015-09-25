@@ -1,6 +1,20 @@
 from flask import url_for,request,_app_ctx_stack
 from ..models import BaseMixin,sa
 
+def last_project_id():
+    ctx = _app_ctx_stack.top
+    pop = False
+    if ctx is None:
+        from .. import get_app,settings
+        ctx = get_app(settings.Config,add_default_extensions=False).test_request_context()
+        ctx.push()
+        pop = True
+    result =  max([x.id for x in Project.get_all()])
+    if pop:
+        ctx.pop()
+    return int(result)
+
+
 class Project(BaseMixin):
     name = sa.Column(sa.String(255))
 

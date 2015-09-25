@@ -34,7 +34,9 @@
                                 <ul class=list-unstyled>
                                     {% if not t.complete %}
                                         <li><h4 class="text-center lead">{{ t.name }}</h4></li>
-                                        <li class="text-center">Due On: <span class="label label-danger">{{ t.due_date|date_pretty }}</span></li>
+                                        {% if t.due_date %}
+                                            <li class="text-center">Due On: <span class="label label-danger">{{ t.due_date|date_pretty }}</span></li>
+                                        {% endif %}
                                     {% endif %}
                                 </ul>
                             </div>

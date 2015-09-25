@@ -23,7 +23,7 @@ def assets(asset_types=None):
 class NoSettingsObjectError(Exception):
     pass
 
-def get_app(settings=None,extensions=[],*args,**kwargs):
+def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kwargs):
     app = Flask(__name__,*args,**kwargs)
     if settings is not None:
         app.config.from_object(settings)
@@ -32,9 +32,10 @@ def get_app(settings=None,extensions=[],*args,**kwargs):
     if extensions:
         for e in extensions:
             e.init_app(app)
-    router = FlaskRouter(app)
-    apps = FlaskApps(app)
-    loader = FlaskTemplateLoader(app)
+    if add_default_extensions:
+        router = FlaskRouter(app)
+        apps = FlaskApps(app)
+        #loader = FlaskTemplateLoader(app)
 
     app.jinja_env.globals['assets'] = assets
     app.jinja_env.filters['date_pretty'] = date_pretty
