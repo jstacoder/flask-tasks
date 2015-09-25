@@ -7,7 +7,7 @@ flask-apps==0.0.2
 flask-codemirror==0.0.3
 Flask-DebugToolbar==0.9.2
 Flask-PageDown==0.1.5
--e git+git@github.com:jstacoder/flask-router.git#egg=flask_router-master
+-e git+https://github.com/jstacoder/flask-router.git#egg=flask_router-master
 Flask-Script==2.0.5
 Flask-SocketIO==0.6.0
 Flask-SQLAlchemy==2.0
