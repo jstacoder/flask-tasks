@@ -1,0 +1,26 @@
+{% extends base or 'base.html' %}
+{% macro render_field(field) %}
+    <div class=form-group>
+        {% if field.label.text %}
+            <label>{{ field.label.text }}</label>
+        {% endif %}
+            {{ field(class_='form-control') }}                    
+    </div>
+{% endmacro %}
+{% macro submit_button(txt,size=false,color=false,link=false,use_input=false) %}
+    <{% if use_input %}input{% elif link %}a{% else %}button{% endif %} class="btn {% if size %}btn-{{ size }} {% endif %}btn-{{ color|default('primary') }}" {% if use_input %}value="{{ txt }}" />{% elif link %} href="{{ link }}">{{txt}}</a>{% else %}>{{ txt }}</button>{% endif %}
+{% endmacro %}
+
+{% block page_header %}
+    <h3 class=page-heading>add a new project</h3>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {% if form %}
+        <form class=form method=post action=''>
+            {{ render_field(form.name) }}
+            {{ submit_button('submit') }}
+        </form>
+    {% endif %}
+{% endblock %}

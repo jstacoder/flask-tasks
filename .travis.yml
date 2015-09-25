@@ -1,0 +1,19 @@
+language: python
+
+python:
+    - "2.7"
+
+services:
+    # for example 
+    # - redis-server
+    #- mysql-server
+
+#install deps
+install:
+    #- "pip install . -q"
+    - "pip install -r requirements.txt -vvv"      
+    #- "python setup.py install"
+
+# tests
+script: 
+    - "nosetests tests"
