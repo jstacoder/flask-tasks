@@ -1,4 +1,5 @@
 import json
+from flask import url_for
 from flask_tasks.messages import socket
 from unittest import TestCase
 from flask_tasks import get_app,settings,models
@@ -6,26 +7,26 @@ from flask_tasks.tasks.models import Task
 from flask_tasks.projects.models import Project
 from seed import seed
 
-
 excludes = [
-    'url','tasks'
-        ]
+    'url',
+    'tasks'
+]
 
 TASK_VIEW_API_RESPONSE = { 
-        u'task': {
-            u'complete': False,
-                 u'id': 2,
-                 u'name': u'task2',
-                 u'priority': u'5',
-                 u'project': {
-                     u'id': 1,
-                 }
-            }
+    u'task': {
+        u'complete': False,
+        u'id': 2,
+        u'name': u'task2',
+        u'priority': u'5',
+        u'project': {
+            u'id': 1,
+        }
+    }
 }
 
 ADD_PROJ_API_RESPONSE = {
-            u'id': 2,
-            u'name': u"test2",
+    u'id': 2,
+    u'name': u"test2",
 }
         
 ADD_TASK_API_RESPONSE = {
@@ -35,22 +36,39 @@ ADD_TASK_API_RESPONSE = {
     u'priority': u'5',
 }
 
-
 PROJ_VIEW_API_RESPONSE = {
-        u'project': {
-            u'id': 1,
-            u'name': u'test',
-        }
+    u'project': {
+        u'id': 1,
+        u'name': u'test',
+    }
 }
 
-process_tasks = lambda tasks: map(lambda x: x.get('url') and x.pop('url'),tasks) and map(lambda x: x.get('due_date') and x.pop('due_date'),tasks) and map(lambda x: x.get('project') and x.get('project').get('url') and x.get('project').pop('url'),tasks) and tasks
-
-
+process_tasks = lambda tasks:\
+                    map(
+                        lambda x: x.get('url') and\
+                                  x.pop('url'),tasks
+                    ) and map(
+                        lambda x: x.get('due_date') and\
+                                  x.pop('due_date'),tasks
+                    ) and map(
+                        lambda x: x.get('project') and\
+                                  x.get('project')\
+                                   .get('url') and x\
+                                   .get('project')\
+                                   .pop('url'),tasks
+                    ) and tasks
 
 class TestTaskApiTestCase(TestCase):
     maxDiff = None
+
+    def url_for(self,*args,**kwargs):
+        rtn = ''
+        with self.app.test_request_context():
+            rtn = url_for(*args,**kwargs)
+        return rtn
+
     def setUp(self):
-        self.app = get_app(settings.TestConfig,extensions=[socket])
+        self.app = get_app(settings.TestConfig,extensions=[socket],reset_db=True)
         self.client = self.app.test_client()
         with self.app.test_request_context():
             models.BaseMixin.metadata.bind = models.BaseMixin.engine
@@ -121,6 +139,38 @@ class TestTaskApiTestCase(TestCase):
                 opts['content_length'] = len(data)
         return json.loads(self.client.post('/api/v1/{0}/add'.format(model),data=data,**opts).data)
 
+    def _add_test(self,data_func,model,expected_response,excludes=None,content_type=None,*args,**kwargs):
+        _kwargs = {}
+        if content_type is not None:
+            kwargs['content_type'] = content_type
+            _kwargs['content_type'] = content_type
+        res = self._send_add_request(
+                                model = model,
+                                data = data_func(*args,**kwargs),
+                                **_kwargs
+        )
+        if excludes is not None:
+            for itm in excludes:
+                if itm in res:
+                    res.pop(itm)
+        self.assertEquals(res,expected_response)
+
+    '''
+    def _test_add_form(self,model,expected_response,excludes=None,**kwargs):
+        def data_func(*args,**kwargs):
+            return dict(**kwargs)
+        return self._add_test(data_func,model,expected_response,excludes)
+    '''
+    def _test_add_form(self,model,expected_response,excludes=None,**kwargs):
+        data = dict(**kwargs)
+        res = self._send_add_request(model,data=data)        
+        if excludes:
+            for itm in excludes:
+                if itm in res:
+                    res.pop(itm)
+        expecting = expected_response
+        self.assertEquals(res,expecting)
+
     def test_add_project_then_task(self):
         data = json.dumps(dict(name='test'))
         res = self._send_add_request('projects',data,content_type='application/json')        
@@ -136,6 +186,8 @@ class TestTaskApiTestCase(TestCase):
             print 'no res', res
         self.assertEquals(new_proj_id,proj_id)
 
+    def test_create_test_urls(self):
+        self.assertEquals(self.url_for('tasks_api.complete_task'),'/api/v1/tasks/complete')
 
     def test_task_completed(self):
         data = dict(task_id=5)
@@ -143,22 +195,9 @@ class TestTaskApiTestCase(TestCase):
         res = self.client.get('/api/v1/tasks/view/5').data
         self.assertTrue(json.loads(res)['task']['complete'])
 
-    def _test_add_form(self,model,expected_response,excludes=None,**kwargs):
-        data = dict(**kwargs)
-        res = self.client.post('/api/v1/{0}/add'.format(model),data=data).data    
-        res = json.loads(res)
-        if excludes:
-            for itm in excludes:
-                if itm in res:
-                    res.pop(itm)
-        expecting = expected_response
-        self.assertEquals(res,expecting)
-
     def _test_add_data(self,model,expected_response,excludes=None,**kwargs):
         data = dict(**kwargs)
-        res = self.client.post('/api/v1/{0}/add'.format(model),data=json.dumps(data)).data
-        print res
-        res = json.loads(res)
+        res = self._send_add_request(model,json.dumps(data))                
         if excludes:
             for itm in excludes:
                 if itm in res:
@@ -168,8 +207,7 @@ class TestTaskApiTestCase(TestCase):
 
     def _test_add_json(self,model,expected_response,excludes=None,**kwargs):
         data = json.dumps(dict(**kwargs))
-        res = self.client.post('/api/v1/{0}/add'.format(model),data=data,content_type='application/json',content_length=len(data)).data
-        res = json.loads(res)
+        res = self._send_add_request(model,data,content_type='application/json')        
         if excludes:
             for itm in excludes:
                 if itm in res:

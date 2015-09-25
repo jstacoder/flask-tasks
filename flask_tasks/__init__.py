@@ -25,6 +25,9 @@ class NoSettingsObjectError(Exception):
     pass
 
 def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kwargs):
+    reset_db = None
+    if 'reset_db' in kwargs:
+        reset_db = kwargs.pop('reset_db')
     app = Flask(__name__,*args,**kwargs)
     if settings is not None:
         app.config.from_object(settings)
@@ -40,14 +43,10 @@ def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kw
 
     app.jinja_env.globals['assets'] = assets
     app.jinja_env.filters['date_pretty'] = date_pretty
-    
-    with app.test_request_context():
-        models.BaseMixin.metadata.bind = models.BaseMixin.engine
-        models.BaseMixin.engine.echo = True
-        models.BaseMixin.metadata.drop_all(checkfirst=True)
-        models.BaseMixin.metadata.create_all(checkfirst=True)
-
+    if reset_db is not None:
+        with app.test_request_context():
+            models.BaseMixin.metadata.bind = models.BaseMixin.engine
+            models.BaseMixin.engine.echo = True 
+            models.BaseMixin.metadata.drop_all(checkfirst=True)
+            models.BaseMixin.metadata.create_all(checkfirst=True)
     return app
-
-
-#print assets(['css'])
