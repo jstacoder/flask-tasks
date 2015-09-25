@@ -15,6 +15,10 @@ install:
     #- "python setup.py install"
     - "python setup_db.py"
 
+cache:
+    directories:
+        - $HOME/.cache/pip
+
 # tests
 script: 
     - "nosetests tests"
