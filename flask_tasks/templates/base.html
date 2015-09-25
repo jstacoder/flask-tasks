@@ -1,18 +1,28 @@
 <html>
-    <head>{{ assets()|safe }}</head>
-    <body>
+    <head>
+        {{ assets()|safe }}
+        <script src="{{ url_for('static',filename='js/app.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/app/projects.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/app/routes.js') }}"></script>
+        <base href='/' />
+    </head>
+    <body ng-app="app">
         <div class="{% if container_class %}{{ container_class }}{% else %}container-fluid{% endif %}">
             <div class=row>
                 <div class=col-md-12>
-                    {% block page_header %}{% endblock %}
-                        {% set msgs = get_flashed_messages(with_categories=true) %}
-                        {% if msgs %}
-                            {% for cat , msg in msgs %}
-                                <div class="alert alert-{{ cat }}">
-                                    {{ msg }}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
+                    {% block page_header %}
+                    {% endblock %}
+                    {% set msgs = get_flashed_messages(with_categories=true) %}
+                    {% if msgs %}
+                        {% for cat , msg in msgs %}
+                            <div 
+                                closing-alert 
+                                alert-cls="{{ cat }}" 
+                                alert-msg="{{ msg }}"
+                            > 
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             <div class=row>

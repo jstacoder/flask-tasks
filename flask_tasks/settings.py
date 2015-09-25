@@ -11,6 +11,7 @@ class Config(object):
         'flask_tasks.admin.urls.routes',
         'flask_tasks.tasks.api.urls.routes',
         'flask_tasks.projects.api.urls.routes',
+        'flask_tasks.front.urls.routes',
     ]
 
     VERBOSE = True
@@ -22,7 +23,8 @@ class Config(object):
         'flask_tasks.projects',
         'flask_tasks.projects.api',
         'flask_tasks.admin',
-        'flask_tasks.tasks.api'
+        'flask_tasks.tasks.api',
+        'flask_tasks.front',
     ]
 
     DATABASE_URI = 'postgresql://tasks:tasks@localhost/tasks'
