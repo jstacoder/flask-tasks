@@ -15,11 +15,11 @@ get_assets = lambda: json.loads(getoutput('cd {0} && bower list -r -j -p --allow
 def assets(asset_types=None):
     default_asset_types = ['css','js','less']
     asset_types = asset_types if asset_types is not None else default_asset_types
-    _js = '<script src="{0}"></script>'
-    _css = '<link rel=stylesheet href="{0}" />'
+    _js = '<script src="/{0}"></script>'
+    _css = '<link rel=stylesheet href="/{0}" />'
     fix_asset = lambda name: dict(js=_js,css=_css)[op.splitext(name)[-1][1:]].format(name)
     assets = get_assets()
-    return '\n'.join(map(str,[fix_asset(assets[a]) for a in assets if filter(lambda x: map(lambda y: y.endswith(x),assets[a]),asset_types)]))
+    return '\n'.join(map(str,reversed([fix_asset(assets[a]) for a in assets if filter(lambda x: map(lambda y: y.endswith(x),assets[a]),asset_types)])))
 
 class NoSettingsObjectError(Exception):
     pass

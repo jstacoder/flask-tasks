@@ -4,7 +4,18 @@
         {% if field.label.text %}
             <label>{{ field.label.text }}</label>
         {% endif %}
-            {{ field(class_='form-control') }}                    
+        {{ field(class_='form-control') }}                    
+        {% if field.description %}
+            <p class="help-block">{{ field.description }}</p>
+        {% endif %}
+    </div>
+{% endmacro %}
+{% macro render_checkbox(field) %}
+    <div class="checkbox">
+        <label>
+            {{ field() }}
+            {{ field.label.text }}
+        </label>
     </div>
 {% endmacro %}
 {% macro submit_button(txt,size=false,color=false,link=false,use_input=false) %}
@@ -18,11 +29,39 @@
 
 {% block content %}
     {% if form %}
-        <form class=form method=post action=''>
-            {{ render_field(form.name) }}
-            {{ render_field(form.due_date) }}
-            {{ form.project_id() }}
-            {{ submit_button('submit','lg','success') }}
-        </form>
+        <div class=row>
+            <div class="col-md-10 col-md-offset-1">
+                <div class="panel panel-default">
+                <form class="panel-body form" method=post action=''>
+                    <fieldset>
+                        <legend>Task Info</legend>
+                        <div class=row>
+                            <div class=col-md-12>
+                                {{ render_field(form.name) }}                            
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Optional data</legend>
+                        <div class=row>
+                            <div class=col-md-6>
+                                {{ render_field(form.due_date) }}
+                            </div>
+                            <div class=col-md-6>
+                                {{ render_field(form.priority) }}
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class=col-md-12>
+                        {{ render_checkbox(form.add_another_task) }}
+                    </div>
+                    <div class=col-md-12>
+                        {{ submit_button('submit','lg','success') }}
+                    </div>
+                    {{ form.project_id() }}
+                </form>
+                </div>
+            </div>
+        </div>
     {% endif %}
 {% endblock %}

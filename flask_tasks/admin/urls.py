@@ -8,5 +8,6 @@ routes = [
             ('/','index',IndexView),
             ('/add-project','admin_add_project',AdminAddProjectView),
             ('/add-task','admin_add_task',AdminAddTaskView),
+            ('/add-task/<int:project_id>','admin_add_task_by_id',AdminAddTaskView),
         )
 ]

@@ -3,6 +3,8 @@ import os.path as op
 class Config(object):
     REGISTER_BLUEPRINTS = False
 
+    SECRET_KEY = 'xxxxx'
+
     URL_MODULES = [
         'flask_tasks.tasks.urls.routes',
         'flask_tasks.projects.urls.routes',
