@@ -4,7 +4,7 @@
 def refresh_db(app=None,models=None,seed=None):
     if app is None:
         from flask_tasks import get_app,settings
-        app = get_app(settings.TestConfig,refresh_db=True)
+        app = get_app(settings.TestConfig,reset_db=True)
     if models is None:
         from flask_tasks import models
     if seed is None:
