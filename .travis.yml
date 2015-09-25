@@ -13,7 +13,7 @@ services:
 
 #install deps
 install:
-    - "pip install . -q"
+    #- "pip install . -q"
     - "pip install -r requirements.txt -q"
     #- "python setup.py install"
 
