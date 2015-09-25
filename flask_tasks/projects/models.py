@@ -9,7 +9,11 @@ def last_project_id():
         ctx = get_app(settings.Config,add_default_extensions=False).test_request_context()
         ctx.push()
         pop = True
-    rtn = Project.get_all()[-1].id
+    projects = Project.get_all()
+    if len(projects) > 0:
+        rtn = projects[-1].id
+    else:
+        rtn = 0
     if pop:
         ctx.pop()
     return int(rtn)
