@@ -2,11 +2,38 @@
 
 var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects']);
 
-app.directive('closingAlert',closingAlert);
+app.directive('closingAlert',closingAlert)
+   .directive('hoverPanel',hoverPanel);
 
-closingAlert.$inject = [];
 
-function closingAlert(){
+hoverPanel.$inject = [];
+
+
+function hoverPanel(){
+    return {
+        restrict:"A",
+        link:hoverLinkFn
+    };
+}
+
+function hoverLinkFn(scope,ele,attrs){
+    var bgClass = attrs.hoverPanel && 'bg-'+attrs.hoverPanel || 'bg-primary';
+    ele.on('mouseover',function(e){
+        if(!ele.hasClass(bgClass)){
+            ele.addClass(bgClass);
+        }
+    });
+    ele.on('mouseout',function(e){
+        if(ele.hasClass(bgClass)){
+            ele.removeClass(bgClass);
+        }
+    });
+}
+
+
+closingAlert.$inject = ['$timeout'];
+
+function closingAlert($timeout){
     return {
         restrict:'EA',
         template:'<div ng-class="thisAlert.cls">' 
@@ -18,21 +45,28 @@ function closingAlert(){
             alertMsg:"@"
         },
         replace:true,
-        link:closingAlertLinkFn
+        link:closingAlertLinkFn.apply(null,arguments)
     };
 }
 
-//closingAlertLinkFn.$inject = ['
+//closingAlertLinkFn.$inject = ['$timeout'];
 
-function closingAlertLinkFn(scope,ele,attrs){
-    scope.thisAlert = {};
-    scope.thisAlert.msg = attrs.alertMsg;
-    scope.thisAlert.cls = attrs.alertCls;
-    scope.thisAlert.close = closeFn;
 
-    function closeFn(){
-        return ele.remove();
-    }
+function closingAlertLinkFn($timeout){
+    return function(scope,ele,attrs){
+        scope.thisAlert = {};
+        scope.thisAlert.msg = attrs.alertMsg;
+        scope.thisAlert.cls = "alert alert-"+attrs.alertCls;
+        scope.thisAlert.close = closeFn;
+
+        $timeout(function() {
+            closeFn();
+        }, 5000);
+
+        function closeFn(){
+            return ele.remove();
+        }
+    };
 }
 
 

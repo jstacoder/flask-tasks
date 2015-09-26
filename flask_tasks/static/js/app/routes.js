@@ -20,8 +20,8 @@ function routeConfigFn($routeProvider,$locationProvider){
     .when('/app/project/:projId',{
         templateUrl:'/static/partials/project.html',
         resolve:{
-            project:['projectManager','$routeParams',function(projectManager,$routeParams){
-                return projectManager.getProject($routeParams.projId);
+            project:['projectManager','$route',function(projectManager,$route){
+                return projectManager.getProject($route.current.params.projId);
             }]
         },
         controller:'ProjCtrl',

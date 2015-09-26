@@ -1,0 +1,23 @@
+{{ "Hi there From Angular" }}
+
+<div ng-if="ctrl.project">
+    <h2 class=page-header>
+        {{ ctrl.project.name }}
+    </h2>
+    <hr />
+    <div class=row>
+        <div class=col-md-3  ng-repeat="task in ctrl.project.tasks">
+            <div class="panel panel-default">
+                <div hover-panel="success"  class=panel-body>
+                    <p>Name: {{ task.name }}</p>
+                
+                    <ul class=list-unstyled>
+                        <li>Completed: {{ task.complete }}</li>
+                        <li>Due: {{ task.due_date | date : 'M/d/yy' }}</li>
+                        <li>Priority: {{ task.priority }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

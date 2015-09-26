@@ -1,35 +1,39 @@
-from flask import views,jsonify,request
+from flask import views,jsonify,request,make_response
 from inflection import pluralize
 import json
 from ..models import Project
-from ...views import PostView
+from ...views import PostView,_jsonify
 
 class ListProjectView(views.MethodView):
-    result_key = 'project'
 
     def get(self,item_id=None):
         if item_id is None:
             rtn = [p.to_json() for p in Project.get_all() if any(filter(lambda t: (not t.complete), p.tasks))]
-            result_key = pluralize(self.result_key)
+            result = _jsonify(rtn)
         else:
             rtn = Project.get_by_id(item_id)
             if rtn:
-                rtn = rtn.to_json()
-            result_key = self.result_key
-        return jsonify({result_key:rtn})
+                rtn = rtn.to_json(add_tasks=True)
+            else:
+                rtn = {}
+            result = jsonify(**rtn)
+        return result
 
 class ListTasksByProjectView(views.MethodView):
     def get(self,item_id):
         proj = Project.get_by_id(item_id)
-        result = dict(project=proj.to_json(),tasks=[])
         if proj is not None:
-            tasks = proj.tasks.all()
+            result = proj.to_json(add_tasks=True)
+            tasks = proj.tasks.all()            
             if request.args:
                 if int(request.args.get('complete')):
-                    tasks = [t for t in tasks if t.complete]
+                    result['tasks'] = [t.to_json() for t in tasks if t.complete]
                 else:
-                    tasks = [t for t in tasks if not t.complete]
-            result['tasks'] = map(lambda x: x.to_json(),tasks)
+                    result['tasks'] = [t for t in tasks if not t.complete]
+            else:
+                result['tasks'] = map(lambda x: x.to_json(),tasks)
+        else:
+            result = {'error':'no project with id {0} found}'.format(item_id)}
         return jsonify(**result)
 
 class AddProjectView(PostView):

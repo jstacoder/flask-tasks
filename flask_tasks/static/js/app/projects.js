@@ -6,7 +6,17 @@ app.factory('projectFactory',projectFactory)
     .factory('getProject',getProject)
     .factory('getActiveProjects',getActiveProjects)
     .service('projectManager',projectManager)
-    .controller('HomeCtrl',HomeCtrl);
+    .controller('HomeCtrl',HomeCtrl)
+    .controller('ProjCtrl',ProjCtrl);
+
+
+ProjCtrl.$inject = ['project'];
+
+function ProjCtrl(project){
+    var self = this;
+
+    self.project = project;
+}
 
 HomeCtrl.$inject = ['projects','$window'];
 
@@ -29,11 +39,17 @@ function projectManager(getProject,getActiveProjects){
     };
 }
 
-getActiveProjects.$inject = ['projectFactory'];
+getActiveProjects.$inject = ['projectFactory','getProject'];
 
-function getActiveProjects(projectFactory){
+function getActiveProjects(projectFactory,getProject){
+    var projects = [];
     return function getActive(){
-        return projectFactory.query();
+        projectFactory.query(function(res){
+            res.forEach(function(itm){
+                projects.push(getProject(itm.id));
+            });
+        });
+        return projects;
     };
 }
 
@@ -49,26 +65,11 @@ function getProject(projectFactory){
 projectFactory.$inject = ['$resource'];
 
 function projectFactory($resource){
-    return $resource('/api/v1/projects/view/:id',{id:'@id'},{
+    return $resource('/api/v1/projects/view/:id/tasks',{id:'@id'},{
         query:{
             method:"GET",
             url:"/api/v1/projects/list",
-            isArray:false,
+            isArray:true,
         },
-        getTasks:{
-            method:"GET",
-            url:"/api/v1/projects/view/:id/tasks",
-            params:{id:"@id"},
-            useList:false
-        },
-        get:{
-            url:'/api/v1/projects/view/:id',
-            params:{id:"@id"},
-            transformResponse:[
-                function(data,headers) {
-                    return angular.fromJson(data).project,headers;
-                },
-            ]
-        }
     });
 }

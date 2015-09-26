@@ -1,5 +1,12 @@
-from flask import views,request
-import json
+from flask import views,request,make_response,json
+
+
+def _jsonify(data):
+    data = json.dumps(data)
+    response = make_response(data)
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Content-Length'] = len(data)
+    return response
 
 class PostView(views.MethodView):
     def _process_post(self):

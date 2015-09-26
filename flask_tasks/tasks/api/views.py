@@ -2,22 +2,22 @@ from flask import views,jsonify,request
 from inflection import pluralize
 import json
 from ..models import Task
-from ...views import PostView
+from ...views import PostView,_jsonify
 
 
 class ListTaskView(views.MethodView):
-    result_key = 'task'
-
     def get(self,item_id=None):
         if item_id is None:
             rtn = [t.to_json() for t in Task.get_all() if not t.complete]
-            result_key = pluralize(self.result_key)
+            result = _jsonify(rtn)
         else:
             rtn = Task.get_by_id(item_id)
             if rtn:
                 rtn = rtn.to_json(in_list=False)
-            result_key = self.result_key
-        return jsonify({result_key:rtn})
+                result = jsonify(**rtn)
+            else:
+                rtn = jsonify(**{'error':'task with id {0} not found'.format(item_id)})
+        return result
 
 
 class AddTaskView(PostView):

@@ -1,5 +1,5 @@
 import json
-from flask import url_for
+from flask import url_for, _app_ctx_stack as ctx
 from flask_tasks.messages import socket
 from unittest import TestCase
 from flask_tasks import get_app,settings,models
@@ -13,7 +13,6 @@ excludes = [
 ]
 
 TASK_VIEW_API_RESPONSE = { 
-    u'task': {
         u'complete': False,
         u'id': 2,
         u'name': u'task2',
@@ -21,7 +20,6 @@ TASK_VIEW_API_RESPONSE = {
         u'project': {
             u'id': 1,
         }
-    }
 }
 
 ADD_PROJ_API_RESPONSE = {
@@ -37,10 +35,8 @@ ADD_TASK_API_RESPONSE = {
 }
 
 PROJ_VIEW_API_RESPONSE = {
-    u'project': {
         u'id': 1,
         u'name': u'test',
-    }
 }
 
 process_tasks = lambda tasks:\
@@ -58,7 +54,20 @@ process_tasks = lambda tasks:\
                                    .pop('url'),tasks
                     ) and tasks
 
-class TestTaskApiTestCase(TestCase):
+
+class BaseCase(TestCase):
+    def __call__(self,*args,**kwargs):
+        if hasattr(self,'app'):
+            current_ctx = ctx.top
+            if current_ctx is None:
+                with self.app.test_request_context():
+                    return super(BaseCase,self).__call__(*args,**kwargs)
+        return super(BaseCase,self).__call__(*args,**kwargs)
+
+
+
+
+class TestTaskApiTestCase(BaseCase):
     maxDiff = None
 
     def url_for(self,*args,**kwargs):
@@ -86,26 +95,26 @@ class TestTaskApiTestCase(TestCase):
     def test_list_all_tasks(self):
         res = self.client.get('/api/v1/tasks/list').data
         res = json.loads(res)
-        res['tasks'] = process_tasks(res['tasks'])
-        self.assertEquals(res,{'tasks':process_tasks(map(lambda x: x.to_json(add_urls=False),Task.get_all()))})
+        res = process_tasks(res)
+        self.assertEquals(res,process_tasks(map(lambda x: x.to_json(add_urls=False),Task.get_all())))
 
     def test_list_all_projects(self):
         res = self.client.get('/api/v1/projects/list').data
         res = json.loads(res)
-        map(lambda proj: proj.pop('tasks'),res['projects'])
-        self.assertEquals(res,{'projects':map(lambda x: x.to_json(add_urls=False),Project.get_all())})
+        print res
+        self.assertEquals(res,map(lambda x: x.to_json(),Project.get_all()))
 
     def test_view_one_task(self):
         res = self.client.get('/api/v1/tasks/view/2').data
         res = json.loads(res)
-        res.get('task').pop('due_date')
-        res.get('task').get('project').pop('url')        
+        res.pop('due_date')
+        res.get('project').pop('url')        
         self.assertEqual(res,TASK_VIEW_API_RESPONSE)
 
     def test_view_one_project(self):
         res = self.client.get('/api/v1/projects/view/1').data
         res = json.loads(res)
-        res.get('project').pop('tasks')
+        res.pop('tasks')
         self.assertEqual(res,PROJ_VIEW_API_RESPONSE)
                         
     def test_add_project_form(self):
@@ -181,7 +190,7 @@ class TestTaskApiTestCase(TestCase):
         res = self.client.get('/api/v1/tasks/view/{0}'.format(task_id)).data
         if res:
             res = json.loads(res)
-            new_proj_id =  res['task']['project']['id']
+            new_proj_id =  res['project']['id']
         else:
             print 'no res', res
         self.assertEquals(new_proj_id,proj_id)
@@ -193,7 +202,7 @@ class TestTaskApiTestCase(TestCase):
         data = dict(task_id=5)
         self.client.post('/api/v1/tasks/complete',data=data)
         res = self.client.get('/api/v1/tasks/view/5').data
-        self.assertTrue(json.loads(res)['task']['complete'])
+        self.assertTrue(json.loads(res)['complete'])
 
     def _test_add_data(self,model,expected_response,excludes=None,**kwargs):
         data = dict(**kwargs)
