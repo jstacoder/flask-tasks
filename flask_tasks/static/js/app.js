@@ -2,14 +2,71 @@
 
 var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects']);
 
+app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,projectFactory,getProject,$q){
+    $rootScope.counts = {};
+    function addRootProjects(){
+        $rootScope.projects = [];
+        projectFactory.query(function(res){
+            res.forEach(function(itm){
+                var proj = getProject(itm.id);
+                if($rootScope.projects.indexOf(proj)==-1){
+                    $rootScope.projects.push(proj);
+                }
+                console.log($rootScope.projects);        
+            });
+                console.log($rootScope.projects);        
+            return $q.all($rootScope.projects);
+        }).$promise.then(function(res){
+            console.log('updateing!!!!');
+            console.log($rootScope.projects);        
+            $rootScope.resetCounts(true);          
+        });
+    }
+    $rootScope.getActiveCount = function(pid){
+        $rootScope.setActiveCount(pid)
+        return $rootScope.counts[pid];
+    };
+    $rootScope.setActiveCount = function(pid){
+        var c = 0;
+        var proj;
+        angular.forEach($rootScope.projects,function(itm){
+            if(itm.id==parseInt(pid)){
+                proj = itm;
+            }
+        });
+        angular.forEach(proj.tasks,function(itm){
+            if(!itm.complete){
+                c++;
+            }
+        });
+        if(!$rootScope.counts){
+            $rootScope.counts = {};
+        }
+        $rootScope.counts[pid] = c;
+    };
+    $rootScope.resetCounts = function(fromRoot){
+        if(!fromRoot){
+            addRootProjects();
+        }
+        console.log($rootScope.projects);
+        angular.forEach($rootScope.projects,function(itm){
+            $q.when(itm.$promise).then(function(res){
+                console.log('setting active ',res,itm,itm.id);
+                $rootScope.setActiveCount(itm.id);
+            });
+        });
+    };
+    $rootScope.$on('complete-task',function(e){
+        console.log('EMITTING COMP{LETE');
+        $rootScope.resetCounts();
+    });
+    $rootScope.resetCounts();
+}]);
+
 app.directive('closingAlert',closingAlert)
-   .directive('hoverPanel',hoverPanel);
+   .directive('hoverColor',hoverColor);
 
-
-hoverPanel.$inject = [];
-
-
-function hoverPanel(){
+function hoverColor(){
     return {
         restrict:"A",
         link:hoverLinkFn
@@ -17,16 +74,14 @@ function hoverPanel(){
 }
 
 function hoverLinkFn(scope,ele,attrs){
-    var bgClass = attrs.hoverPanel && 'bg-'+attrs.hoverPanel || 'bg-primary';
+    var bgColor = attrs.hoverColor || 'green',
+        oldColor = ele.css('background-color');
     ele.on('mouseover',function(e){
-        if(!ele.hasClass(bgClass)){
-            ele.addClass(bgClass);
-        }
+        ele.css('background-color',bgColor)
+           .css('cursor','pointer');
     });
     ele.on('mouseout',function(e){
-        if(ele.hasClass(bgClass)){
-            ele.removeClass(bgClass);
-        }
+        ele.css('background-color',oldColor);
     });
 }
 

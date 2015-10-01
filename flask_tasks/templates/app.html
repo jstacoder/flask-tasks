@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+    {% block left_side_bar %}
+        <div ng-include="'{{ left_side_bar_template | default('/static/partials/left.html') }}'"></div>
+    {% endblock %}
     {% block content %}
         <ng-view></ng-view>
+    {% endblock %}
+    {% block right_side_bar %}
+        <div ng-include="'{{ right_side_bar_template | default('/static/partials/right.html') }}'"></div>
     {% endblock %}

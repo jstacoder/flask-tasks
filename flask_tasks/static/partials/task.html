@@ -1,0 +1,29 @@
+<a ng-click="ctrl.projectPage(ctrl.project.id)" class="btn btn-default btn-block">Back to Project</a>
+<div class=row>
+    <div class=col-md-12>
+        <div class="panel panel-default">
+            <div class="row panel-heading">
+                <div class=col-md-5>
+                        <a ng-if="ctrl.hasLast(ctrl.tid)" href="{{ctrl.lastTask()}}">
+                            <span class="pull-left text-primary fa fa-reply fa-4x">
+                            </span>
+                        </a>
+                </div>
+                <div class=col-md-2>
+                    <h3 class="text-center">{{ ctrl.getTask().name }}</h3>
+                </div>
+                <div class=col-md-5>
+                    <a ng-if="ctrl.hasNext(ctrl.tid)" href="{{ctrl.nextTask()}}">
+                                <span class="pull-right text-primary fa fa-share fa-4x">
+                                </span>                    
+                            </a>
+                </div>
+            </div>
+                <div class=list-group>
+                    <a ng-repeat="(k,v) in ctrl.getTask()" class=list-group-item>
+                        <h3>{{ k }} - <small>{{ v }}</small></h3>
+                    </a>
+                </div>
+        </div>
+    </div>
+</div>

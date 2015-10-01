@@ -4,6 +4,7 @@
         <script src="{{ url_for('static',filename='js/app.js') }}"></script>
         <script src="{{ url_for('static',filename='js/app/projects.js') }}"></script>
         <script src="{{ url_for('static',filename='js/app/routes.js') }}"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <base href='/' />
     </head>
     <body ng-app="app">
@@ -26,8 +27,17 @@
                 </div>
             </div>
             <div class=row>
-                <div class="col-md-8 col-md-offset-2">
-                    {% block content %}{% endblock %}
+                <div class="col-md-2">
+                    {% block left_side_bar %}
+                    {% endblock %}
+                </div>
+                <div class="col-md-8">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+                <div class="col-md-2">
+                    {% block right_side_bar %}
+                    {% endblock %}
                 </div>
             </div>
         </div>
