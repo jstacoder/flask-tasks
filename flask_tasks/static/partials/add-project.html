@@ -1,10 +1,14 @@
+<bs-alert type="warning" msg="ctrl.msg" ng-if="ctrl.msg">
+</bs-alert>
+
 <table class="table table-condensed table-bordered">
     <thead>
         <caption>Projects</caption>
     </thead>
     <tbody>
-        <tr ng-repeat="project in ctrl.projects">
-            <td>{{ project.name }}</td>
+        <tr ng-repeat="project in ctrl.projects" class=row>
+            <td class=col-md-11>{{ project.name }}</td>
+            <td hover-bg bg-color="red" ng-click="ctrl.deleteProj(project.id)" class="text-center col-md-1"><span class="text-danger fa fa-2x fa-remove"></span></td>
         </tr>
     </tbody>
 </table>

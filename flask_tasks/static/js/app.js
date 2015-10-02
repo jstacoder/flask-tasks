@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit','app.tasks','app.projects.add']);
+var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit','app.tasks','app.projects.add','app.projects.delete']);
 
 app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,projectFactory,getProject,$q){
     $rootScope.counts = {};
@@ -70,7 +70,8 @@ app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,pro
 app.directive('closingAlert',closingAlert)
    .directive('hoverColor',hoverColor)
    .directive('bsPanel',bsPanel)
-   .directive('bsAlert',bsAlert);
+   .directive('bsAlert',bsAlert)
+   .directive('hoverBg',hoverBg);
 
 bsAlert.$inject = ['$timeout'];
 
@@ -79,7 +80,7 @@ function bsAlert($timeout){
         restrict : "E",
         scope:{
             type:"@",
-            msg:"@"
+            msg:"="
         },
         template:'<div class="alert alert-{{ type }}">'
                     +'{{ msg }}'
@@ -126,6 +127,36 @@ function bsPanelLinkFn(scope,ele,attrs){
     scope.title = attrs.title;
     scope.usebody = attrs.useBody;
     //ele.addClass('panel').addClass('panel-'+scope.type);
+}
+
+function hoverBg(){
+    return {
+        restrict:"A",
+        link:hoverBgLinkFn
+    };
+}
+
+function hoverBgLinkFn(scope,ele,attrs){    
+    var bgColor = getContextClass(attrs.bgColor) || 'success',
+        bgClass = 'bg-'+bgColor;
+    ele.on('mouseover',function(e){
+        ele.addClass(bgClass)
+           .css('cursor','pointer');
+    });
+    ele.on('mouseout',function(e){
+        ele.removeClass(bgClass);
+    });
+    
+}
+
+function getContextClass(ctx){
+    return {
+        'green':'success',
+        'blue':'primary',
+        'yellow':'warning',
+        'red':'danger',
+        'teal':'info'
+    }[ctx];
 }
 
 function hoverColor(){
