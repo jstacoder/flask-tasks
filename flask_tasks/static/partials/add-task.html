@@ -1,0 +1,53 @@
+{{ "'Hi there From Angular'" }}
+
+<bs-panel title=current type=success use-body=1>
+    <form class=form>
+        <fieldset>
+            <legend ng-if="ctrl.task.pid" ng-bind=ctrl.task.pid></legend>
+            <div class=form-group>
+                <label>Add To What Project?</label>
+                <select 
+                    class="form-control"
+                    ng-options="projects.indexOf(project) as project.name for project in projects track by project.id" 
+                    ng-model="ctrl.task.project_id">
+                </select>
+            </div>
+            
+            <div class=form-group>
+                <label>Task Name</label>
+                <input type=text name=task ng-model=ctrl.task.name class=form-control />
+            </div>
+            <div class=form-group>
+                <label class="radio-inline">
+                      <input type="radio" name="priority" id="priority1" value="1" ng-model=ctrl.task.priority /> 1
+                </label>
+                <label class="radio-inline">
+                      <input type="radio" name="priority" id="priority2" value="2" ng-model=ctrl.task.priority /> 2
+                </label>
+                <label class="radio-inline">
+                      <input type="radio" name="priority" id="priority3" value="3" ng-model=ctrl.task.priority /> 3
+                </label>
+                <label class="radio-inline">
+                      <input type="radio" name="priority" id="priority4" value="4" ng-model=ctrl.task.priority /> 4
+                </label>
+                <label class="radio-inline">
+                      <input type="radio" name="priority" id="priority5" value="5" ng-model=ctrl.task.priority /> 5
+                </label>
+            </div>
+            <div class=form-group>
+                <label>Due Date</label>
+                <input type=date name=due ng-model=ctrl.task.due_date class=form-control />
+            </div>
+            <button ng-click="ctrl.submitTask()" class="btn btn-primary">Save</button>
+        </fieldset>
+    </form>
+</bs-panel>
+{{ ctrl.task | json }}
+<div ng-if="ctrl.submitting">
+    <h3>Loading!!</h3>
+</div>
+<bs-alert 
+    type=success 
+    msg="You added a new Task" 
+    ng-if="ctrl.submitted">
+</bs-alert>

@@ -23,6 +23,10 @@ class ListTaskView(views.MethodView):
 class AddTaskView(PostView):
     def post(self):
         self._process_post()
+        if type(self.data) == str:
+            print self.data
+            
+            self.data = json.loads(self.data)
         data = Task(**self.data).save().to_json()
         return jsonify(**data)
 

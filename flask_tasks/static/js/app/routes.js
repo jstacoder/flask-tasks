@@ -92,6 +92,10 @@ function routeConfigFn($routeProvider,$locationProvider){
         },
         controller:'EditProjCtrl',
         controllerAs:'ctrl'
+    }).when('/app/add/task',{
+        templateUrl:'/static/partials/add-task.html',
+        controller:'AddTaskCtrl',
+        controllerAs:'ctrl'
     }).otherwise({
         redirectTo:'/app'     
     });

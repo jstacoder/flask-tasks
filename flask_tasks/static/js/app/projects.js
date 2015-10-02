@@ -178,7 +178,8 @@ function ProjCtrl(project,$location,$interpolate,sortByPriority,completeTask,$wi
         completeTask(task);
         taskList.splice(taskIdx,1);
         self.sortedTasks[task.priority] = taskList;
-        $rootScope.$emit('complete-task');
+        $rootScope.decrementCount(self.project.id);
+        //$rootScope.$emit('complete-task');
     };
 
 

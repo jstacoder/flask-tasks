@@ -1,9 +1,13 @@
 'use strict';
 
-var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit']);
+var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit','app.tasks']);
 
 app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,projectFactory,getProject,$q){
     $rootScope.counts = {};
+
+    $rootScope.decrementCount = function(pid){
+        $rootScope.counts[pid]--;
+    };
     function addRootProjects(){
         $rootScope.projects = [];
         projectFactory.query(function(res){
@@ -65,7 +69,30 @@ app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,pro
 
 app.directive('closingAlert',closingAlert)
    .directive('hoverColor',hoverColor)
-   .directive('bsPanel',bsPanel);
+   .directive('bsPanel',bsPanel)
+   .directive('bsAlert',bsAlert);
+
+bsAlert.$inject = ['$timeout'];
+
+function bsAlert($timeout){
+    return {
+        restrict : "E",
+        scope:{
+            type:"@",
+            msg:"@"
+        },
+        template:'<div class="alert alert-{{ type }}">'
+                    +'{{ msg }}'
+                +'</div>',
+        link:function bsAlertLinkFn(scope,ele,attrs){
+            scope.type = attrs.type;
+            scope.msg = attrs.msg;
+            $timeout(function(){
+                ele.remove();
+            },2500);
+        }
+    };
+}
 
 bsPanel.$inject = [];
 
@@ -73,17 +100,16 @@ function bsPanel(){
     return {
         restrict:"E",
         transclude:true,
-        replace:true,
+        //replace:true,
         template:'<div>'
                     +'<div class="panel panel-{{ type }}">'
                         +'<div class="panel-heading" ng-if=title>'
                             +'<h3 class=panel-title>{{ title }}</h3>'
                         +'</div>'
-                        +'<div ng-class="'
-                        +"{'panel-body':usebody}"
-                        +'">'
-                            +'<div ng-transclude></div>'
+                        +'<div ng-if="usebody" class="panel-body">'
+                            +'<ng-transclude></ng-transclude>'
                         +'</div>'
+                        +'<ng-transclude ng-if="!usebody"></ng-transclude>'
                     +'</div>'
                 +'</div>',
         scope:{
