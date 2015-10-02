@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit','app.tasks']);
+var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit','app.tasks','app.projects.add']);
 
 app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,projectFactory,getProject,$q){
     $rootScope.counts = {};

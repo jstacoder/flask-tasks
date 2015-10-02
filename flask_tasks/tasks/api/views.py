@@ -46,6 +46,25 @@ class CompleteTaskView(PostView):
         return jsonify(result)
 
 
-            
+        
+class DeleteTaskView(PostView):
+    def post(self):
+        self._process_post()
+        success = None
+        try:
+            task = Task.query.get(self.data.get('item_id'))
+            if task is not None:
+                task.delete()
+                success = True
+        except:
+            success = False
+        if success is not None and success:
+            rtn = jsonify(result='success',action='deleted a task',item=self.data.get('item_id'))
+        elif success is not None:
+            rtn = jsonify(result='error',action='somthing went wrong when i tried deleting a task',item=None)
+        else:
+            rtn = jsonify(result='error',action='could not load task',item=None)
+        return rtn
+
 
 

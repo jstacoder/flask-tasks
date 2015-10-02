@@ -22,6 +22,24 @@ TASK_VIEW_API_RESPONSE = {
         }
 }
 
+DELETE_TASK_SUCCESS_API_RESPONSE = dict(
+        result='success',
+        action='deleted a task',
+        item="2"
+)
+
+
+DELETE_TASK_ERROR_API_RESPONSE = dict(
+        result='error',
+        action='somthing went wrong when i tried deleting a task',
+        item=None
+)
+DELETE_TASK_NOT_FOUND_API_RESPONSE = dict(
+        result='error',
+        action='could not load task',
+        item=None
+)
+
 ADD_PROJ_API_RESPONSE = {
     u'id': 2,
     u'name': u"test2",
@@ -139,6 +157,30 @@ class TestTaskApiTestCase(BaseCase):
         data = dict(task_id=5)
         res = self.client.post('/api/v1/tasks/complete',data=data).data
         self.assertEqual(json.loads(res),dict(success=True,error=None))
+
+    def test_delete_project(self):
+        data = dict(item_id=1)
+        res = self.client.post('/api/v1/projects/delete',data=data).data
+        want = json.loads(json.dumps(dict(result='success',action='delete',item='1')))
+        self.assertEquals(json.loads(res),want)
+                
+    def test_delete_task_success(self):
+        data = dict(item_id=2)
+        res = self.client.post('/api/v1/tasks/delete',data=data).data
+        want = json.loads(json.dumps(DELETE_TASK_SUCCESS_API_RESPONSE))
+        self.assertEquals(json.loads(res),want)
+
+    def test_delete_task_not_found(self):
+        data = dict(item_id=5555)
+        res = self.client.post('/api/v1/tasks/delete',data=data).data
+        want = json.loads(json.dumps(DELETE_TASK_NOT_FOUND_API_RESPONSE))
+        self.assertEquals(json.loads(res),want)
+
+    def test_delete_task_error(self):
+        data = dict()
+        res = self.client.post('/api/v1/tasks/delete',data=data).data
+        want = json.loads(json.dumps(DELETE_TASK_ERROR_API_RESPONSE))
+        self.assertEquals(json.loads(res),want)
 
     def _send_add_request(self,model,data,content_type=None):
         opts = {}

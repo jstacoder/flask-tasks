@@ -96,6 +96,15 @@ function routeConfigFn($routeProvider,$locationProvider){
         templateUrl:'/static/partials/add-task.html',
         controller:'AddTaskCtrl',
         controllerAs:'ctrl'
+    }).when('/app/add/project',{
+        templateUrl:'/static/partials/add-project.html',
+        resolve:{
+            projects:['projectFactory',function(projectFactory){
+                return projectFactory.query(); //getActiveProjects().map(function(itm){console.log(itm,'  ',itm.name); return itm.name;});
+            }]
+        },
+        controller:'AddProjCtrl',
+        controllerAs:'ctrl'
     }).otherwise({
         redirectTo:'/app'     
     });

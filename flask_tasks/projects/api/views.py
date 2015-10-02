@@ -42,4 +42,24 @@ class AddProjectView(PostView):
         proj = Project(**self.data).save().to_json()
         return jsonify(**proj)
 
+class DeleteProjectView(PostView):
+    def post(self):
+        self._process_post()
+        proj = Project.query.get(self.data['item_id'])
+        success = None
+        if proj:
+            print dir(proj)
+            try:
+                proj.delete()
+                success = True
+            except:
+                success = False
+            if success is not None and success:
+                rtn = jsonify(**dict(result='success',action='delete',item=self.data.get('item_id')))
+            elif success is not None:
+                rtn = jsonify(**dict(result='error',action='error when attempting delete',item=self.data.get('item_id')))
+            else:
+                rtn = jsonify(**dict(result='error',action='could not find item',item=self.data.get('item_id')))
+        return rtn
+
 
