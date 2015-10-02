@@ -4,6 +4,7 @@
         <script src="{{ url_for('static',filename='js/app.js') }}"></script>
         <script src="{{ url_for('static',filename='js/app/projects.js') }}"></script>
         <script src="{{ url_for('static',filename='js/app/routes.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/app/projects/edit.js') }}"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <base href='/' />
     </head>
@@ -35,7 +36,7 @@
                     {% block content %}
                     {% endblock %}
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2 well">
                     {% block right_side_bar %}
                     {% endblock %}
                 </div>

@@ -1,0 +1,35 @@
+<form class=form-horizontal>
+    <fieldset>
+        <legend>Editing {{ ctrl.project.name }}</legend>
+        <input class=form-control type=text ng-model=ctrl.project.name />
+    </fieldset>
+    <bs-panel type=default title="Active Projects">
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>name</th>
+                    <th>due</th>
+                </tr>
+            </thead>            
+            <tbody>
+                <tr ng-repeat="task in ctrl.project.tasks" ng-if="!task.complete">
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.due_date }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </bs-panel>
+    <table class="table table-condensed table-hover">
+        <h4>Archived tasks</h4>
+            <thead>
+                <tr>
+                    <th>name</th>
+                </tr>
+            </thead>            
+            <tbody>
+                <tr ng-repeat="task in ctrl.project.tasks" ng-if="!!task.complete">
+                    <td>{{ task.name }}</td>
+                </tr>
+            </tbody>
+    </table>
+</form>

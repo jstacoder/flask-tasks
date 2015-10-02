@@ -2,17 +2,27 @@
 
 <div ng-if="ctrl.projects">
     <h3>Projects</h3>
-    <div class=row>
-        <ul class=list-unstyled>
-            <li ng-repeat="project in ctrl.projects">
-                <div class=col-md-4>
+    <select 
+        class="form-control"
+        ng-options="projects.indexOf(project) as project.name for project in projects track by project.id" 
+        ng-model="current">
+    </select>
+    <div class=row ng-if="current">
+                <div class=col-md-12>
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="text-center panel-title">{{ project.name }}</h3>
+                            <h3 class="text-center panel-title">{{ projects[current].name }}</h3>
                         </div>                        
                         <div class="bg-warning panel-body">
-                            <p class="text-center" >Tasks: <span class="label label-primary">{{ project.tasks.length || 0 }}</span></p>
-                            <a class="btn btn-primary btn-block" ng-href="/app/project/{{ project.id }}">View</a>
+                            <p class="text-center" >Tasks: <span class="label label-primary">{{ projects[current].tasks.length || 0 }}</span></p>
+                            <div class=row>
+                                <div class=col-md-6>
+                                    <a class="btn btn-danger btn-block" ng-href="/app/edit/project/{{ current }}">Edit</a>
+                                </div>
+                                <div class=col-md-6>
+                                    <a class="btn btn-primary btn-block" ng-href="/app/project/{{ current }}">View</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

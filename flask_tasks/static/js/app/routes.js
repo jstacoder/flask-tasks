@@ -85,8 +85,15 @@ function routeConfigFn($routeProvider,$locationProvider){
         controller:'TaskCtrl',
         controllerAs:'ctrl'
     })
-    .otherwise({
-        redirectTo:'/'            
+    .when('/app/edit/project/:projId',{
+        templateUrl:'/static/partials/editproj.html',
+        resolve:{
+            project:getProjFunc()
+        },
+        controller:'EditProjCtrl',
+        controllerAs:'ctrl'
+    }).otherwise({
+        redirectTo:'/app'     
     });
     $locationProvider.html5Mode(true);
 }

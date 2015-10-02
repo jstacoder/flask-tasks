@@ -58,18 +58,12 @@ function TaskCtrl(project,task,activeTasks,$routeParams,$route,$location,$window
     self.taskIdx = getTaskIndex(self.tid);
 
     self.lastTask = function(){
-        //updateActive();
         var rtn = changeFunc({pid:self.project.id,tid:getLastTask(self.tid)});
-        ///updateActive();
         return rtn;
-        //changeTask(self.taskIdx-1);
     };
     self.nextTask = function(){
-        //updateActive();
         var rtn = changeFunc({pid:self.project.id,tid:getNextTask(self.tid)});
-        //updateActive();
         return rtn;
-        //changeTask(self.taskIdx+1);
     };
 
     self.hasNext = function(id){
@@ -83,8 +77,6 @@ function TaskCtrl(project,task,activeTasks,$routeParams,$route,$location,$window
                 }
             }   
         });
-        console.log(active);
-        console.log(idx);
         return (idx+1) && idx != active.length-1;
     }
     self.hasLast = function(id){
@@ -98,8 +90,6 @@ function TaskCtrl(project,task,activeTasks,$routeParams,$route,$location,$window
                 }
             }   
         });
-        console.log(active);
-        console.log(idx);
         return idx && active.length && idx != 0;
     }
     function getLastTask(id){
@@ -151,7 +141,6 @@ function TaskCtrl(project,task,activeTasks,$routeParams,$route,$location,$window
     function projectPage(pid){
         var projUrl = projectUrlFunc({pid:pid});
         $location.path(projUrl).replace();
-        //$window.location.href = projUrl;
     }
     function changeTask(n){
         var task = getFromActiveTasks(n);
@@ -188,6 +177,7 @@ function ProjCtrl(project,$location,$interpolate,sortByPriority,completeTask,$wi
             taskIdx = taskList.indexOf(task);        
         completeTask(task);
         taskList.splice(taskIdx,1);
+        self.sortedTasks[task.priority] = taskList;
         $rootScope.$emit('complete-task');
     };
 
@@ -203,7 +193,9 @@ function ProjCtrl(project,$location,$interpolate,sortByPriority,completeTask,$wi
                 5:[]
             };
             angular.forEach(tasks.tasks,function(task){
-                rtn[task.priority].push(task);
+                if(!task.complete){
+                    rtn[task.priority].push(task);
+                }
             });
             self.sortedTasks = rtn;
         });

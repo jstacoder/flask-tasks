@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects']);
+var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit']);
 
 app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,projectFactory,getProject,$q){
     $rootScope.counts = {};
@@ -64,7 +64,43 @@ app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,pro
 }]);
 
 app.directive('closingAlert',closingAlert)
-   .directive('hoverColor',hoverColor);
+   .directive('hoverColor',hoverColor)
+   .directive('bsPanel',bsPanel);
+
+bsPanel.$inject = [];
+
+function bsPanel(){
+    return {
+        restrict:"E",
+        transclude:true,
+        replace:true,
+        template:'<div>'
+                    +'<div class="panel panel-{{ type }}">'
+                        +'<div class="panel-heading" ng-if=title>'
+                            +'<h3 class=panel-title>{{ title }}</h3>'
+                        +'</div>'
+                        +'<div ng-class="'
+                        +"{'panel-body':usebody}"
+                        +'">'
+                            +'<div ng-transclude></div>'
+                        +'</div>'
+                    +'</div>'
+                +'</div>',
+        scope:{
+            title:"@",
+            useBody:"@",
+            type:"="
+        },
+        link:bsPanelLinkFn
+    };
+}
+
+function bsPanelLinkFn(scope,ele,attrs){
+    scope.type = attrs.type;
+    scope.title = attrs.title;
+    scope.usebody = attrs.useBody;
+    //ele.addClass('panel').addClass('panel-'+scope.type);
+}
 
 function hoverColor(){
     return {

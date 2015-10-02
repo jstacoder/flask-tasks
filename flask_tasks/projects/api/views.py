@@ -33,7 +33,7 @@ class ListTasksByProjectView(views.MethodView):
             else:
                 result['tasks'] = map(lambda x: x.to_json(),tasks)
         else:
-            result = {'error':'no project with id {0} found}'.format(item_id)}
+            result = {'error':'no project with id {0} found'.format(item_id)}
         return jsonify(**result)
 
 class AddProjectView(PostView):
