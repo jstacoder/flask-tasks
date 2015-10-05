@@ -95,7 +95,7 @@ class TestTaskApiTestCase(BaseCase):
         return rtn
 
     def setUp(self):
-        self.app = get_app(settings.TestConfig,extensions=[socket],reset_db=True)
+        self.app = get_app(settings.TestConfig,reset_db=True)
         self.client = self.app.test_client()
         with self.app.test_request_context():
             models.BaseMixin.metadata.bind = models.BaseMixin.engine
