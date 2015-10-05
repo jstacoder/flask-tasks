@@ -1,12 +1,20 @@
 'use strict';
 
-var app = angular.module('app',['ngRoute','ipCookie','ngResource','ui.bootstrap','app.routes','app.projects','app.projects.edit','app.tasks','app.projects.add','app.projects.delete']);
+var app = angular.module('app',[
+        'ngRoute','ipCookie','ngResource','app.socket',
+        'ui.bootstrap','app.routes','app.projects',
+        'app.projects.edit','app.tasks','app.projects.add',
+        'app.projects.delete','app.projects.list','ngTouch'
+]);
 
 app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,projectFactory,getProject,$q){
     $rootScope.counts = {};
 
     $rootScope.decrementCount = function(pid){
         $rootScope.counts[pid]--;
+    };
+    $rootScope.incrementCount = function(pid){
+        $rootScope.counts[pid]++;
     };
     function addRootProjects(){
         $rootScope.projects = [];
@@ -67,11 +75,60 @@ app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,pro
     $rootScope.resetCounts();
 }]);
 
-app.directive('closingAlert',closingAlert)
+app.controller('MainCtrl',MainCtrl)
+   .directive('closingAlert',closingAlert)
    .directive('hoverColor',hoverColor)
    .directive('bsPanel',bsPanel)
    .directive('bsAlert',bsAlert)
-   .directive('hoverBg',hoverBg);
+   .directive('hoverBg',hoverBg)
+   .directive('hoverIcon',hoverIcon);
+
+MainCtrl.$inject = ['socket'];
+
+function MainCtrl(socket){
+    var self = this;
+
+    socket.on('msg',function(data){
+        console.log(data);
+        console.log(angular.fromJson(data));
+    });
+}
+
+hoverIcon.$inject = [];
+
+function hoverIcon(){
+    return {
+        restrict:"E",
+        scope:{
+            icon:"@"
+        },
+        link:hoverIconLinkFn
+    };
+    function hoverIconLinkFn(scope,ele,attrs){
+        function getSpan(){
+            return angular.element(document.createElement('span'));
+        }
+        var noHoverEl  = getSpan().addClass('fa').addClass('fa-circle-thin').addClass('fa-2x'),
+            hoverEl =getSpan().addClass('fa-stack').addClass('fa-lg'),
+            outerHoverEl = getSpan().addClass('fa').addClass('fa-circle-thin').addClass('fa-stack-2x'),
+            innerHoverEl = getSpan().addClass('fa').addClass('fa-remove').addClass('text-danger').addClass('fa-stack-1x'),
+            old;
+        hoverEl.append(outerHoverEl.append(innerHoverEl));
+        ele.append(noHoverEl);
+        ele.on('mouseover',function(){
+            ele.replaceWith(hoverEl);
+            ele = hoverEl;
+        });
+        ele.on('mouseleave',function(e){
+            console.log('mouse out',e);
+
+            ele.replaceWith(noHoverEl);
+            ele = noHoverEl;
+
+        });
+    }
+}
+
 
 bsAlert.$inject = ['$timeout'];
 
@@ -80,7 +137,7 @@ function bsAlert($timeout){
         restrict : "E",
         scope:{
             type:"@",
-            msg:"="
+            msg:"@"
         },
         template:'<div class="alert alert-{{ type }}">'
                     +'{{ msg }}'

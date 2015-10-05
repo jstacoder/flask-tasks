@@ -1,12 +1,19 @@
 from flask import views,jsonify,request
 from inflection import pluralize
-import json
+from flask import json
+from grequests import get, post
+from gevent import spawn
 from ..models import Task
+from ...events import send_event
 from ...views import PostView,_jsonify
+from ...socket import socket
 
 
 class ListTaskView(views.MethodView):
     def get(self,item_id=None):
+        data = dict(msg='testing')
+        res = send_event(data)
+        print res.content
         if item_id is None:
             rtn = [t.to_json() for t in Task.get_all() if not t.complete]
             result = _jsonify(rtn)
@@ -19,6 +26,30 @@ class ListTaskView(views.MethodView):
                 rtn = jsonify(**{'error':'task with id {0} not found'.format(item_id)})
         return result
 
+class UpdateTaskView(PostView):
+    def post(self):
+        default_result = jsonify(success=False,error='there was an error')
+        updated = False
+        result = None
+        self._process_post()
+        task = Task.get_by_id(self.data.get('id'))
+        if task is not None:
+            for itm in self.data:
+                print itm
+                print type(self.data.get(itm))
+                if not itm.startswith('_') and type(self.data.get(itm)) != dict:
+                    if hasattr(task,itm) and self.data.get(itm) != getattr(task,itm):
+                        setattr(task,itm,self.data.get(itm))
+                        if not updated:
+                            updated = True
+                            result = jsonify(success=True,error=None)
+            send_event(json.dumps(dict(event='update',type='task',data=task.save().to_json())))
+        else:
+            result = jsonify(success=False,error='task not found')
+        return result or default_result
+
+
+
 
 class AddTaskView(PostView):
     def post(self):
@@ -28,6 +59,7 @@ class AddTaskView(PostView):
             
             self.data = json.loads(self.data)
         data = Task(**self.data).save().to_json()
+        send_event(dict(event='create',type='task',data=data))
         return jsonify(**data)
 
 class CompleteTaskView(PostView):
@@ -39,6 +71,7 @@ class CompleteTaskView(PostView):
             if not task.complete:
                 task.complete = True
                 task.save()
+                send_event(dict(event='complete',type='task',data=task.to_json()))
             else:
                 result = dict(success=False,error='task already complete')
         else:
@@ -59,12 +92,17 @@ class DeleteTaskView(PostView):
         except:
             success = False
         if success is not None and success:
-            rtn = jsonify(result='success',action='deleted a task',item=self.data.get('item_id'))
+            rtn = dict(result='success',action='deleted a task',item=self.data.get('item_id'))
         elif success is not None:
-            rtn = jsonify(result='error',action='somthing went wrong when i tried deleting a task',item=None)
+            rtn = dict(result='error',action='somthing went wrong when i tried deleting a task',item=None)
         else:
-            rtn = jsonify(result='error',action='could not load task',item=None)
-        return rtn
+            rtn = dict(result='error',action='could not load task',item=None)
+        send_event(rtn)
+        def send():
+            socket.emit('delete:task', rtn,namespace='/test')
+        t = spawn(send)
+        t.start()
+        return jsonify(**rtn)
 
 
 

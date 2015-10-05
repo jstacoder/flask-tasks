@@ -41,6 +41,8 @@ function TaskCtrl(project,task,activeTasks,$routeParams,$route,$location,$window
     self.task = task;
     self.activeTasks = activeTasks;
 
+    angular.element(document.createElement('span'));
+
     self.getTask = function(){
         var rtn;
         angular.forEach(self.project.tasks,function(itm){

@@ -19,22 +19,22 @@
                             ng-if="!task.complete"
                         >
                             <div class=row>
-                                <div class=col-md-4>
+                                <div class="col-sm-12 col-md-4">
                                     <h4>{{ task.name }}</h4>
                                 </div>
-                                <div class=col-md-4>
+                                <div class="col-sm-12 col-md-4">
                                     <h4>
                                         <small>Due On: {{ task.due_date|fixdate|date:'M/d/yy' }}</small>
                                     </h4>
                                 </div>
-                                <div class=col-md-2>
+                                <div class="col-xs-7 col-sm-5 col-md-2">
                                     <button 
                                         ng-click="ctrl.changePage(ctrl.project.id,task.id)" 
                                         class="btn btn-primary">
                                             View
                                     </button>
                                 </div>
-                                <div class=col-md-2>
+                                <div class="col-xs-4 col-sm-7 col-md-2">
                                     <button 
                                         ng-click="ctrl.completeTask(task)" 
                                         class="btn btn-danger">

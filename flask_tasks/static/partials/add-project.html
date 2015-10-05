@@ -1,5 +1,12 @@
-<bs-alert type="warning" msg="ctrl.msg" ng-if="ctrl.msg">
+<bs-alert type="warning" msg="{{ ctrl.msg }}" ng-if="ctrl.msg">
 </bs-alert>
+<bs-panel usebody="1">
+    <form class=form>
+        <input class=form-control type=text ng-model="ctrl.project.name" />
+    </form>
+    <button class="btn btn-sm btn-primary" ng-click="ctrl.submit()">Submit</button>
+    {{ ctrl.project | json }}
+</bs-panel>
 
 <table class="table table-condensed table-bordered">
     <thead>
@@ -7,8 +14,8 @@
     </thead>
     <tbody>
         <tr ng-repeat="project in ctrl.projects" class=row>
-            <td class=col-md-11>{{ project.name }}</td>
-            <td hover-bg bg-color="red" ng-click="ctrl.deleteProj(project.id)" class="text-center col-md-1"><span class="text-danger fa fa-2x fa-remove"></span></td>
+            <td class="col-xs-10 col-md-11" ng-click="ctrl.goToProject(project.id)">{{ project.name }}</td>
+            <td hover-bg bg-color="red" ng-click="ctrl.deleteProj(project.id)" class="text-center col-xs-2 col-md-1"><span class="text-danger fa fa-2x fa-remove"></span></td>
         </tr>
     </tbody>
 </table>

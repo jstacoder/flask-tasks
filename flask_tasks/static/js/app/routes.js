@@ -105,6 +105,15 @@ function routeConfigFn($routeProvider,$locationProvider){
         },
         controller:'AddProjCtrl',
         controllerAs:'ctrl'
+    }).when('/app/list/:projId',{
+        templateUrl:'/static/partials/project-list.html',
+        resolve:{
+            project:['projectFactory','$route',function(projectFactory,$route){
+                return projectFactory.get({id:$route.current.params.projId});
+            }]
+        },
+        controller:'ProjListCtrl',
+        controllerAs:'ctrl'
     }).otherwise({
         redirectTo:'/app'     
     });
