@@ -49,8 +49,6 @@ def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kw
 
     app.jinja_env.globals['assets'] = assets
     app.jinja_env.filters['date_pretty'] = date_pretty
-    from events import events
-    app.register_blueprint(events)
     return app
 
 def main():
