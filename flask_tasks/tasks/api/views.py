@@ -9,9 +9,6 @@ from ...socket import socket,emit_message
 
 class ListTaskView(views.MethodView):
     def get(self,item_id=None):
-        data = dict(msg='testing')
-        res = send_event(data)
-        print res.content
         if item_id is None:
             rtn = [t.to_json() for t in Task.get_all() if not t.complete]
             result = _jsonify(rtn)
