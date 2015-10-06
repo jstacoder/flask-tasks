@@ -80,6 +80,32 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
             self.deletedTasks.push(data.item);
         }
     });
+    socket.on('create:task',function(data){
+        console.log('RECEIVED CREATE SIGNAL',data);
+        var found = false;
+        angular.forEach(self.project.tasks,function(itm){
+            if(itm.id==data.id){
+                found = true;
+            }
+        });
+        if(!found){
+            self.project.tasks.push(data);
+        }
+    });
+    socket.on('complete:task',function(data){
+        console.log('RECEIVED COMPLETE SIGNAL',data);
+    });
+    socket.on('update:task',function(data){
+        console.log('RECEIVED UPDATE SIGNAL',data);
+        var updated = false,
+            idx;
+
+        angular.forEach(self.project.tasks,function(itm,i){
+            if(itm.id==data.id){
+                self.project.tasks[i] = data;
+            }
+        });
+    });
 
     self.deleteTask = function(task){
         deleteTask(task).then(function(res){

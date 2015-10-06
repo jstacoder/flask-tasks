@@ -1,12 +1,10 @@
 from flask import views,jsonify,request
 from inflection import pluralize
 from flask import json
-from grequests import get, post
 from gevent import spawn
 from ..models import Task
-from ...events import send_event
 from ...views import PostView,_jsonify
-from ...socket import socket
+from ...socket import socket,emit_message
 
 
 class ListTaskView(views.MethodView):
@@ -43,7 +41,7 @@ class UpdateTaskView(PostView):
                         if not updated:
                             updated = True
                             result = jsonify(success=True,error=None)
-            send_event(json.dumps(dict(event='update',type='task',data=task.save().to_json())))
+            emit_message('update:task',task.save().to_json())
         else:
             result = jsonify(success=False,error='task not found')
         return result or default_result
@@ -59,7 +57,8 @@ class AddTaskView(PostView):
             
             self.data = json.loads(self.data)
         data = Task(**self.data).save().to_json()
-        send_event(dict(event='create',type='task',data=data))
+        t = spawn(lambda: emit_message('create:task',data))
+        t.start()
         return jsonify(**data)
 
 class CompleteTaskView(PostView):
@@ -71,7 +70,9 @@ class CompleteTaskView(PostView):
             if not task.complete:
                 task.complete = True
                 task.save()
-                send_event(dict(event='complete',type='task',data=task.to_json()))
+                #send_event(dict(event='complete',type='task',data=task.to_json()))
+                t = spawn(lambda: emit_message('complete:task',task.to_json()))
+                t.start()
             else:
                 result = dict(success=False,error='task already complete')
         else:
@@ -97,10 +98,8 @@ class DeleteTaskView(PostView):
             rtn = dict(result='error',action='somthing went wrong when i tried deleting a task',item=None)
         else:
             rtn = dict(result='error',action='could not load task',item=None)
-        send_event(rtn)
-        def send():
-            socket.emit('delete:task', rtn,namespace='/test')
-        t = spawn(send)
+        #send_event(rtn)
+        t = spawn(lambda: emit_message('delete:task', rtn,'/test'))
         t.start()
         return jsonify(**rtn)
 

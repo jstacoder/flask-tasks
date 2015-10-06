@@ -1,4 +1,4 @@
-from flask_xxl.basemodels import BaseMixin
+from flask_xxl.basemodels import BaseMixin 
 import sqlalchemy as sa
 
 

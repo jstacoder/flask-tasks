@@ -10,7 +10,7 @@ socket = SocketIO(async_mode='gevent')
 
 @socket.on('msg')
 def msg(data):
-    emit('msg',{'data':'git this data '+str(data)})
+    socket.emit('msg',{'data':'git this data '+str(data)})
 
 def background_thread():
     """Example of how to send server generated events to clients."""
@@ -24,5 +24,9 @@ def background_thread():
 
 
     
-thread = spawn(background_thread)
-thread.start()
+#thread = spawn(background_thread)
+#thread.start()
+
+
+def emit_message(name,data,ns='/test'):
+    return socket.emit(name,data,namespace=ns)
