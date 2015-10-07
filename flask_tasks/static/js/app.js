@@ -81,7 +81,84 @@ app.controller('MainCtrl',MainCtrl)
    .directive('bsPanel',bsPanel)
    .directive('bsAlert',bsAlert)
    .directive('hoverBg',hoverBg)
-   .directive('hoverIcon',hoverIcon);
+   .directive('hoverIcon',hoverIcon)
+   .directive('bsCheckBox',bsCheckBox);
+
+bsCheckBox.$inject = [];
+
+function bsCheckBox(){
+    return {
+        restrict:"A",
+        require:"?^ngModel",
+        link:bsCheckBoxLinkFn,
+    };
+    function bsCheckBoxLinkFn(scope,ele,attrs,ctrl){
+            console.log(arguments);
+            var cls = ele.attr('class'),
+                newEl = angular.element(document.createElement('span'))
+                           .addClass('fa')
+                           .addClass('fa-circle-o')                           
+                           .addClass('radio-inline')
+                           .addClass('fa-2x')
+                           .attr('value',attrs.value)                                   
+                           .css('margin-left','-10px'),
+                    par = ele.parent(),
+                    newCls = newEl.attr('class');
+        newEl.attr('class',newCls+' '+cls);
+        ele.addClass('hidden');
+        if(ctrl.$viewValue==scope.name){
+            newEl.removeClass('fa-circle-o')
+                .addClass('fa-dot-circle-o');
+
+        }
+        replaceEl(ele,newEl);
+
+        newEl.on('click',function(e){
+            var els = [];
+            angular.forEach(document.querySelectorAll('input[type=radio]'),function(itm){ 
+                console.log(itm);
+                console.log(angular.element(itm).next()); 
+                els.push(angular.element(itm).next()); 
+            });
+            console.log(els);
+            console.log('CURRENT: ',ctrl.$viewValue);
+            if(ctrl.$viewValue==scope.name){
+                console.log(scope);
+                ctrl.$setViewValue(null,e.type);
+                newEl.removeClass('fa-dot-circle-o')
+                     .addClass('fa-circle-o');
+            }else{
+                ctrl.$setViewValue(scope.name,e.type);
+                newEl.removeClass('fa-circle-o')
+                     .addClass('fa-dot-circle-o');
+            }
+                angular.forEach(els,function(itm){
+                    console.log(itm);
+                    var scopeVal = parseInt(scope.name),
+                        itmVal = parseInt(itm.attr('value'));
+
+                    console.log(itmVal);
+                    console.log(scopeVal);
+                    if(itmVal!=scopeVal){
+                        console.log('found******');
+                        if(itm.hasClass('fa-dot-circle-o')){
+                            itm.removeClass('fa-dot-circle-o')
+                            .addClass('fa-circle-o');
+                        }
+                    }
+                });
+            
+            console.log('CURRENT: ',ctrl.$viewValue);
+            console.log(ele,newEl,scope,ctrl);
+            //replaceEl(ele,newEl);
+        });
+        function replaceEl(oldEl,newEl){
+            var parent = oldEl.parent();
+            oldEl.addClass('hidden');
+            parent.append(newEl);            
+        }
+    }
+}
 
 MainCtrl.$inject = ['socket'];
 

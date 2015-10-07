@@ -16,19 +16,44 @@ function deleteTask($http){
 }
 
 
-QuickAddCtrl.$inject = ['$scope','$modalInstance','addTaskToProject'];
+QuickAddCtrl.$inject = ['$scope','$modalInstance','addTaskToProject','$routeParams','$rootScope','project'];
 
-function QuickAddCtrl($scope,$modalInstance,addTaskToProject){
+function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootScope,project){
     var self = this;
-    self.project = $scope.project;
+    self.project = project;
 
     resetTask();
+
+    function getProjFromRoot(pid){
+        var projects = $rootScope.projects;
+        angular.forEach(projects,function(itm){
+            if(pid==itm.id){
+                return itm;
+            }
+        });
+        return false;
+    }
+
+    function submit(task){
+        addTaskToProject(task).then(function(res){
+            self.project.tasks.push(res.data);
+            $rootScope.incrementCount(self.project.id);
+            console.log(res);
+            console.log('saving');
+        },      
+        function(err){
+            console.log('error');
+        });
+    }
+    self.quickAdd = function(){
+    }
 
     
     function resetTask(){
         self.task = {
+            p_choices:['1','2','3','4','5'],
             name:'',
-            priority:'5',
+            priority:'',
             due_date:'',
             project_id:$scope.project_id
         };
@@ -131,6 +156,9 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
              controllerAs:'ctrl',
              size: 'lg',
              scope:$scope,
+             resolve:{
+                project:function(){ return self.project;}
+             }
          });
          modal.result.then(function(task){
              self.quickAddSubmit(task);

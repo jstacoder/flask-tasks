@@ -1,0 +1,44 @@
+<div>
+                <bs-panel title="Quick Task Add" type=default use-body=0>
+                    <form class=form>
+                        <fieldset>
+                            <div class="col-xs-12 form-group">
+                                <label>Add To </label>
+                                <input class="form-control" ng-model=ctrl.project.name readonly/>
+                             </div>
+                             <div class="col-xs-12 form-group">
+                               <label>Task Name</label>
+                                <input type=text name=task ng-model=ctrl.task.name class=form-control />
+                            </div>
+                            
+
+                            <div class="col-xs-12 col-md-5 form-group">
+                                <div class=row>
+                                    <div class="col-md-12 col-xs-12">
+                                        <label>Priority</label>
+                                    </div>
+                                    <div class=col-xs-12" ng-repeat="name in ctrl.task.p_choices">
+                                        <div class=row>
+                                            <label class="bg-danger radio-inline col-xs-push-2 col-xs-2" for="p{{ name }}" > {{ name }}</label>
+                                           <input 
+                                                ng-click="ctrl.showScope()"
+                                                type="radio" 
+                                                name="p"
+                                                id="priority{{ name }}" 
+                                                value="{{ name }}" 
+                                                ng-model=ctrl.task.priority 
+                                                bs-check-box 
+                                                class="col-md-6 col-xs-6 col-xs-push-6"
+                                            /> 
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-7 form-group">
+                                <label>Due Date</label>
+                                <input type=date name=due ng-model=ctrl.task.due_date class=form-control />
+                            </div>
+                        </fieldset>
+                    </form>
+                </bs-panel>            
+</div>

@@ -92,6 +92,14 @@ function routeConfigFn($routeProvider,$locationProvider){
         },
         controller:'EditProjCtrl',
         controllerAs:'ctrl'
+    }).when('/app/add/task/mobile/:projId',{
+        templateUrl:'/static/partials/mobile-add.html',
+        controller:'QuickAddCtrl',
+        controllerAs:'ctrl',
+        resolve:{
+            $modalInstance:function(){ return {};},
+            project:getProjFunc()
+        }
     }).when('/app/add/task',{
         templateUrl:'/static/partials/add-task.html',
         controller:'AddTaskCtrl',
