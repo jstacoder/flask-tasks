@@ -1,4 +1,4 @@
-<div class="row well">
+<div class="row">
     <div class=col-md-12>
             <div class=row>
                 <div class="col-lg-12 col-md-12">
@@ -11,5 +11,18 @@
                     <a href="/app/add/project" class="btn btn-block btn-primary">Add Project</a>
                 </div>
             </div>
+    </div>
+</div>
+<div class=row>
+    <div class=col-md-12>
+        Show only:
+    </div>
+    <div class="btn-group-vertical col-md-12">
+        <button ng-click="setPriority(p)" ng-repeat="p in ['1','2','3','4','5']"  ng-class="priorityClass(p)" class="btn btn-default btn-block">{{p}}</button>
+        result : {{ prioritys('1') }}
+        result : {{ prioritys('2') }}
+        result : {{ prioritys('3') }}
+        result : {{ prioritys('4') }}
+        result : {{ prioritys('5') }}
     </div>
 </div>

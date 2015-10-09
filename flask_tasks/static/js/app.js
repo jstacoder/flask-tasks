@@ -82,7 +82,33 @@ app.controller('MainCtrl',MainCtrl)
    .directive('bsAlert',bsAlert)
    .directive('hoverBg',hoverBg)
    .directive('hoverIcon',hoverIcon)
-   .directive('bsCheckBox',bsCheckBox);
+   .directive('bsCheckBox',bsCheckBox)
+   .factory('launchModal',launchModal);
+
+
+launchModal.$inject = ['$modal','$rootScope'];
+
+function launchModal($modal,$rootScope){
+    return function(title,content,confirmation){
+        var $scope = $rootScope.$new();
+        $scope.content = content;
+        $scope.title = title;
+        $scope.confirmation = confirmation;
+        return $modal.open(
+            {
+                animation: true,
+                templateUrl: 'ModalContent.html',
+                controller: 'GenericModalInstanceCtrl',
+                size: 'lg',
+                scope:$scope
+            }
+        ).result;
+    };
+}
+
+function GenericModalInstanceCtrl(){
+    var self = this;
+}
 
 bsCheckBox.$inject = [];
 
@@ -160,11 +186,39 @@ function bsCheckBox(){
     }
 }
 
-MainCtrl.$inject = ['socket'];
+MainCtrl.$inject = ['socket','$rootScope','$scope'];
 
-function MainCtrl(socket){
+function MainCtrl(socket,$rootScope,$scope){
     var self = this;
+    $scope.priority_values = {
+            '1':false,
+            '2':false,
+            '3':false,
+            '4':false,
+            '5':false
+    };
 
+    $scope.prioritys = function(n){
+        return $scope.priority_values[n]; 
+    };
+    $scope.setPriority = function(n){
+        var func = function(){$scope.priority_values[n] = !$scope.priority_values[n];};
+        $scope.$$phase ? func() : $scope.$apply(func);        
+    };
+    $scope.priorityClass = function(n){
+            return $scope.priority_values[n] ? 'active' : '';
+    };
+    $scope.needsFilter = function(){
+        var res = [];
+        angular.forEach($scope.priority_values,function(itm){
+            if($scope.priority_values[itm]){
+                res.push(itm);
+            }
+        });
+        return res.length;
+    };
+
+    
     socket.on('msg',function(data){
         console.log(data);
         console.log(angular.fromJson(data));

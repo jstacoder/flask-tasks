@@ -1,6 +1,7 @@
 alembic==0.6.7
 blinker==1.4
 decorator==4.0.2
+eventlet==0.17.4
 Flask==0.10.1
 Flask-Alembic==1.0.2
 flask-apps==0.0.2
@@ -34,6 +35,7 @@ mr.bob2==0.2.3
 nose==1.3.7
 path.py==8.1.1
 pexpect==3.3
+phantompy==0.10
 pickleshare==0.5
 psycopg2==2.6.1
 Pygments==2.0.1

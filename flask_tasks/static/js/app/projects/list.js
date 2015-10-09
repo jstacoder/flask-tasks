@@ -16,9 +16,9 @@ function deleteTask($http){
 }
 
 
-QuickAddCtrl.$inject = ['$scope','$modalInstance','addTaskToProject','$routeParams','$rootScope','project'];
+QuickAddCtrl.$inject = ['$scope','$modalInstance','addTaskToProject','$routeParams','$rootScope','project','$location'];
 
-function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootScope,project){
+function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootScope,project,$location){
     var self = this;
     self.project = project;
 
@@ -40,11 +40,22 @@ function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootS
             $rootScope.incrementCount(self.project.id);
             console.log(res);
             console.log('saving');
+            resetTask();
+            $location.path('/app/list/'+self.project.id);
         },      
         function(err){
             console.log('error');
         });
     }
+    self.submit = function(){
+        var task = {
+            name:self.task.name,
+            priority:self.task.priority,
+            due_date:self.task.due_date,
+            project_id:self.project.id
+        };
+        return submit(task);
+    };
     self.quickAdd = function(){
     }
 
@@ -84,12 +95,25 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     self.needSave = false;
     
     self.project = project;
+    self.listTasks = [];
+
     self.saved = {}
     self.originalTasks = {};
     self.editing = {};
     self.deletedTasks = [];
+
+    var ctxColors = {
+        '1':'danger',
+        '2':'warning',
+        '3':'success',
+        '4':'info',
+        '5':'primary'
+    };
     
 
+    self.getCtxColor = function(n){
+        return Object.keys(ctxColors).indexOf(n) > -1 && ctxColors[n];
+    }
     $rootScope.$on('DELETE',function(id){
         console.log('WILL NOW REMOVE ',id);
         angular.forEach(self.project.tasks,function(itm,idx){
@@ -157,7 +181,14 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
              size: 'lg',
              scope:$scope,
              resolve:{
-                project:function(){ return self.project;}
+                project:['$location','launchModal',function($route,launchModal){ 
+                    if(self.project){
+                        return self.project;
+                    }
+                    launchModal('not found','sorry').then(function(){
+                        $location.path('/app');                            
+                    });
+                }]
              }
          });
          modal.result.then(function(task){
@@ -170,6 +201,12 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     };
     
     $q.when(self.project.$promise).then(function(){
+        angular.forEach(self.project.tasks,function(itm){
+            console.log(itm);
+            self.listTasks.push(itm);
+            console.log(self.listTasks);
+        });
+        $scope.listTasks = self.listTasks;
         $scope.project_id = self.project.id;
         $scope.project = self.project.name;
         self.project.tasks.map(function(itm){
@@ -202,6 +239,32 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     self.setNeedSave = function(task){
             setNeedSave(task);
     };
+    function resetListTasks($scope,coll){
+        var tasks = [],
+            count = 0,
+            showAll;
+
+        angular.forEach(coll,function(itm){
+            console.log(itm);
+            console.log(count);
+            console.log(coll.length);
+            if(!itm){
+                count++;
+            }
+        });
+        if(count==Object.keys(coll).length){
+            $scope.listTasks = self.project.tasks;
+            return $scope;
+        }
+
+        angular.forEach(self.project.tasks,function(itm){                
+            if(coll[itm.priority]){
+                tasks.push(itm);
+            }
+        });
+        $scope.listTasks = tasks;
+        return $scope;
+    };
     function resetEdits(){
         angular.forEach(self.project.tasks,function(itm){
             self.editing[itm.id] = false;
@@ -223,6 +286,13 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
             self.needSave = true;
         }
     }
+    $scope.$watchCollection('priority_values',function(newcoll,oldcoll,scope){
+        console.log(arguments);  
+        if(!angular.equals(newcoll,oldcoll)){
+            console.log(newcoll);
+            $scope = resetListTasks($scope,newcoll);
+        }
+    });
     function save(){
         if(!self.changedItems){
             return;   

@@ -34,9 +34,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-7 form-group">
+                            <div class="form-group">
+                                <div class="col-md-5 col-sm-5 col-xs-12">
                                 <label>Due Date</label>
-                                <input type=date name=due ng-model=ctrl.task.due_date class=form-control />
+                                </div>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input type=date name=due ng-model=ctrl.task.due_date class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <button class="btn btn-block btn-primary" ng-click="ctrl.submit()">add</button>
                             </div>
                         </fieldset>
                     </form>

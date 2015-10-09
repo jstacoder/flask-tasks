@@ -3,7 +3,7 @@
                 <h3>Projects</h3>
                 <div ng-if="projects" class=row>                    
                     <div class="list-group col-md-12">
-                        <a class="list-group-item" ng-href="/app/project/{{ project.id }}" ng-repeat="project in projects">
+                        <a class="list-group-item" ng-href="/app/list/{{ project.id }}" ng-repeat="project in projects">
                             <h6 class="text-center">{{ project.name }}</h6>
                             <p class="text-center" >Tasks: <span class="label label-primary">{{ counts[project.id] }}</span></p>
                         </a>
