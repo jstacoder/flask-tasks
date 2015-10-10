@@ -1,4 +1,4 @@
-/* globals angular */
+/* global angular */
 var app = angular.module('app.projects.list',[]);
 
 app.controller('ProjListCtrl',ProjListCtrl)
