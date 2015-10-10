@@ -1,0 +1,7 @@
+languages:
+    Ruby: false
+    JavaScript: true
+    PHP: true
+    Python: true
+exclude_paths:
+    - "flask_tasks/events.py"
