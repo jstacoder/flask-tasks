@@ -1,4 +1,4 @@
-/* jshint global:angular */
+/* globals angular */
 var app = angular.module('app.projects.list',[]);
 
 app.controller('ProjListCtrl',ProjListCtrl)
