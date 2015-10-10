@@ -35,6 +35,9 @@ function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootS
     }
 
     function submit(task){
+        if(task.p_choices){
+            task = extractTask(task);
+        }
         addTaskToProject(task).then(function(res){
             self.project.tasks.push(res.data);
             $rootScope.incrementCount(self.project.id);
@@ -48,18 +51,16 @@ function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootS
         });
     }
     self.submit = function(){
-        var task = {
-            name:self.task.name,
-            priority:self.task.priority,
-            due_date:self.task.due_date,
-            project_id:self.project.id
-        };
-        return submit(task);
+        return submit(extractTask(self.task));    
     };
-    self.quickAdd = function(){
+    function extractTask(task){
+        return {
+            name:task.name,
+            priority:task.priority,
+            due_date:task.due_date,
+            project_id:task.project_id
+        };
     }
-
-    
     function resetTask(){
         self.task = {
             p_choices:['1','2','3','4','5'],
@@ -128,6 +129,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         if(self.deletedTasks.indexOf(data.item)==-1){
             self.deletedTasks.push(data.item);
         }
+        $scope = resetListTasks($scope);
     });
     socket.on('create:task',function(data){
         console.log('RECEIVED CREATE SIGNAL',data);
@@ -140,9 +142,11 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         if(!found){
             self.project.tasks.push(data);
         }
+        $scope = resetListTasks($scope);
     });
     socket.on('complete:task',function(data){
         console.log('RECEIVED COMPLETE SIGNAL',data);
+        $scope = resetListTasks($scope);
     });
     socket.on('update:task',function(data){
         console.log('RECEIVED UPDATE SIGNAL',data);
@@ -154,6 +158,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
                 self.project.tasks[i] = data;
             }
         });
+        $scope = resetListTasks($scope);
     });
 
     self.deleteTask = function(task){
@@ -164,6 +169,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     self.quickAddSubmit = function(task){
         addTaskToProject(task).then(function(res){
             self.project.tasks.push(res.data);
+            $scope = resetListTasks($scope);
             $rootScope.incrementCount(self.project.id);
             console.log(res);
             console.log('saving');
@@ -193,7 +199,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
          });
          modal.result.then(function(task){
              self.quickAddSubmit(task);
-            console.log('done adding to pid: ',self.project_id);        
+            console.log('done adding to pid: ',self.project.id);        
          },function(){
             console.log('Aborting');
          });
@@ -206,7 +212,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
             self.listTasks.push(itm);
             console.log(self.listTasks);
         });
-        $scope.listTasks = self.listTasks;
+        $scope = resetListTasks($scope);
         $scope.project_id = self.project.id;
         $scope.project = self.project.name;
         self.project.tasks.map(function(itm){
@@ -242,7 +248,8 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     function resetListTasks($scope,coll){
         var tasks = [],
             count = 0,
-            showAll;
+            showAll,
+            coll = coll ? coll : $scope.priority_values;
 
         angular.forEach(coll,function(itm){
             console.log(itm);
@@ -256,7 +263,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
             $scope.listTasks = self.project.tasks;
             return $scope;
         }
-
+    
         angular.forEach(self.project.tasks,function(itm){                
             if(coll[itm.priority]){
                 tasks.push(itm);
