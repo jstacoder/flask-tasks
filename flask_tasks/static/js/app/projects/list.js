@@ -1,5 +1,4 @@
-/* global angular */
-/* global getProjFromRoot */
+/* global angular,getProjFromRoot */
 var app = angular.module('app.projects.list',[]);
 
 app.controller('ProjListCtrl',ProjListCtrl)
@@ -29,7 +28,7 @@ function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootS
     function getProjFromRoot(pid){
         var projects = $rootScope.projects;
         angular.forEach(projects,function(itm){
-            if(pid==itm.id){
+            if(pid===itm.id){
                 return itm;
             }
         });
@@ -120,7 +119,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     $rootScope.$on('DELETE',function(id){
         console.log('WILL NOW REMOVE ',id);
         angular.forEach(self.project.tasks,function(itm,idx){
-            if(itm.id==id){
+            if(itm.id===id){
                 self.project.tasks.splice(idx,0);
             }
         });
@@ -128,7 +127,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     });
     socket.on('delete:task',function(data){
         console.log('deleting an item');
-        if(self.deletedTasks.indexOf(data.item)==-1){
+        if(self.deletedTasks.indexOf(data.item)===-1){
             self.deletedTasks.push(data.item);
         }
         $scope = resetListTasks($scope);
@@ -137,7 +136,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         console.log('RECEIVED CREATE SIGNAL',data);
         var found = false;
         angular.forEach(self.project.tasks,function(itm){
-            if(itm.id==data.id){
+            if(itm.id===data.id){
                 found = true;
             }
         });
@@ -156,7 +155,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
             idx;
 
         angular.forEach(self.project.tasks,function(itm,i){
-            if(itm.id==data.id){
+            if(itm.id===data.id){
                 self.project.tasks[i] = data;
             }
         });
@@ -164,7 +163,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     });
 
     self.deleteTask = function(task){
-        deleteTask(task).then(function(res){
+        deleteTask(task).then(function(){
             self.deletedTasks.push(task.id);
         });
     };
@@ -260,7 +259,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
                 count++;
             }
         });
-        if(count==Object.keys(coll).length){
+        if(count===Object.keys(coll).length){
             $scope.listTasks = self.project.tasks;
             return $scope;
         }
@@ -282,7 +281,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         self.needSave = self.changedItems ? true : false;
         self.changedItems = self.changedItems||[];        
         angular.forEach(self.changedItems,function(itm,idx){
-            if(itm.id==task.id){
+            if(itm.id===task.id){
                 self.changedItems.splice(idx,1);  
             }
         });        
@@ -314,7 +313,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
             changes[itm.id] = itm;
             promises.push(updateTask(itm));
         });
-        $q.when($q.all(promises)).then(function(res){
+        $q.when($q.all(promises)).then(function(){
             console.log('DONE SAVING');
             self.changedItems = [];
             self.needSave = false;
@@ -328,8 +327,11 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
                         self.saved[itm] = false;
                     },5000);
                 }
-                $scope.$$phase ? doAction() : $scope.$applyAsync(doAction);
-                
+                if($scope.$$phase){
+                    doAction();
+                }else{
+                    $scope.$applyAsync(doAction);
+                }
             });
         });
     }
