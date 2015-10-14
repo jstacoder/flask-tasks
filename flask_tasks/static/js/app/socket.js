@@ -1,7 +1,5 @@
 var app = angular.module('app.socket',[]),
-    require,
-    io = angular.isDefined(require) ?  require('socket.io-client') : window.io;
-
+    require;
 app.factory('socket',socket)
    .service('p',pFunc);
 
@@ -18,7 +16,7 @@ function pFunc($pusher,$log,$rootScope){
 socket.$inject = ['$rootScope','$window','$location'];
 
 function socket($rootScope,$window,$location){
-    var socket = io('http://'+$location.host()+":"+$location.port()+'/');
+    var socket = {on:function(){},emit:function(){}};
     return {
         on:function(eventName,cb){
             socket.on(eventName,function(){
@@ -39,8 +37,5 @@ function socket($rootScope,$window,$location){
             });
         }
     };
-    socket.on('connect',function(data){
-        console.log('CONNECTED!!!!');
-    });
 }
 

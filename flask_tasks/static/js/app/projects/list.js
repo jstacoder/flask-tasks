@@ -47,7 +47,7 @@ function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootS
         addTaskToProject(task).then(function(res){
             self.project.tasks.push(res.data);
 
-            $rootScope.incrementCount(self.project.id);
+            //$rootScope.incrementCount(self.project.id);
             console.log(res);
             console.log('saving');
             resetTask();
@@ -104,6 +104,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
 
     self.needSave = false;
     self.submitted = false;
+    self.updated = false;
     
     self.project = project;
     self.listTasks = [];
@@ -144,7 +145,6 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     });
     channel.bind('create:task',function(data){
         if(!self.submitted){
-            $rootScope.incrementCount(self.project.id);
             console.log('RECEIVED CREATE SIGNAL',data);
             var found = false;
             angular.forEach(self.project.tasks,function(itm){
@@ -159,6 +159,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
             if(!found){
                 //self.project.tasks.push(data);
                 $scope.listTasks.push(data);
+                $rootScope.incrementCount(self.project.id);
             }
             $scope = resetListTasks($scope);
         }
@@ -169,22 +170,25 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     });
     channel.bind('update:task',function(data){
         console.log('RECEIVED UPDATE SIGNAL',data);
-        var updated = false,
-            idx;
-
-        angular.forEach(self.project.tasks,function(itm,i){
-            if(itm.id===data.id){
-                self.project.tasks[i] = data;
+            var updated = false,
+                idx;
+    
+            angular.forEach(self.project.tasks,function(itm,i){
+                if(itm.id===data.id && itm.complete!=data.complete){
+                    self.project.tasks[i] = data;
+                    updated = true;
+                }
+            });
+            if(updated){
             }
-        });
-        if(data.complete){
-            $rootScope.decrementCount(self.project.id);
-        }else{
-            $rootScope.incrementCount(self.project.id);
-        }
-        $scope = resetListTasks($scope);
+            if(data.complete){
+                $rootScope.decrementCount(self.project.id);
+            }else{
+                $rootScope.incrementCount(self.project.id);
+            }                    
+            $scope = resetListTasks($scope);
     });
-
+    
     self.deleteTask = function(task){
         deleteTask(task).then(function(){
             self.deletedTasks.push(task.id);
@@ -195,7 +199,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         addTaskToProject(task).then(function(res){
             self.project.tasks.push(res.data);
             $scope = resetListTasks($scope);
-            $rootScope.incrementCount(self.project.id);
+            //$rootScope.incrementCount(self.project.id);
             console.log(res);
             console.log('saving');
         },      
@@ -257,13 +261,14 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         $rootScope.counts[self.project.id]--;
     };
     self.completeTask = function(task){
+        self.updated = true;
         var idx = self.project.tasks.indexOf(task);
         self.project.tasks[idx].complete = !task.complete;
         setNeedSave(self.project.tasks[idx]);
         if(self.project.tasks[idx].complete){
-            self.subCount();
+            //self.subCount();
         }else{
-            self.addCount();
+            //self.addCount();
         }
     };  
     self.save = function(){

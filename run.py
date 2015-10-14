@@ -27,10 +27,10 @@ if __name__ == "__main__":
     app = main()
 
     port = int(os.environ.get('PORT',5544))
-    wsgi.server(eventlet.listen(('127.0.0.1', port)), app)
+    #wsgi.server(eventlet.listen(('127.0.0.1', port)), app)
     
     #socket.run(app,host='0.0.0.0',port=port)
-    #server = WSGIServer(('0.0.0.0',port),app)
-    #server.serve_forever()
+    server = wsgi.WSGIServer(('0.0.0.0',port),app)
+    server.serve_forever()
 
 

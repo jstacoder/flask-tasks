@@ -52,10 +52,10 @@ def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kw
     app.jinja_env.globals['assets'] = assets
     app.jinja_env.filters['date_pretty'] = date_pretty
 
-    @app.after_request
-    def af(res):
-        print request.environ['eventlet.input']
-        return res
+    #@app.after_request
+    #def af(res):
+    #    print request.environ['eventlet.input']
+    #    return res
 
     return app
 
