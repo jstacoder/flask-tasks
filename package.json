@@ -1,0 +1,30 @@
+{
+  "name": "flask-tasks",
+  "version": "1.0.0",
+  "description": "task app, with backend + api written using flask and best practices",
+  "main": "t.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jstacoder/flask-tasks.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jstacoder/flask-tasks/issues"
+  },
+  "homepage": "https://github.com/jstacoder/flask-tasks#readme",
+  "dependencies": {
+    "angular": "^1.4.7",
+    "angular-node-updated": "^2.0.0",
+    "benv": "^1.0.0",
+    "node-ng": "0.0.6",
+    "q": "^1.4.1",
+    "socket.io-client": "^1.3.7"
+  },
+  "devDependencies": {
+    "tape": "^4.2.1"
+  }
+}

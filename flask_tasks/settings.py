@@ -27,7 +27,9 @@ class Config(object):
         'flask_tasks.front',
     ]
 
-    DATABASE_URI = 'postgresql://tasks:tasks@localhost/tasks'
+    #DATABASE_URI = 'postgresql://tasks:tasks@localhost/tasks'
+    #DATABASE_URI = 'mysql+pymysql://t:tasks@localhost/tasks'
+    DATABASE_URI = 'sqlite:///production.db'
 
 class TestConfig(Config):
     DATABASE_URI = 'sqlite:///testing.db'

@@ -71,11 +71,11 @@ backlog = 2048
 #       A positive integer. Generally set in the 1-5 seconds range.
 #
 
-workers = 1 
+workers = 2 
 worker_class = 'eventlet'
-worker_connections = 15000
-timeout = 15
-keepalive = 5
+worker_connections = 1500
+timeout = 35
+keepalive = 15
 
 #
 #   spew - Install a trace function that spews every line of Python

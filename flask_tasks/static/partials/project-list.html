@@ -14,6 +14,7 @@
                     task in listTasks | 
                     orderBy : 
                     'priority'
+                    track by $index
             " 
             ng-if="
                     ctrl.deletedTasks.indexOf(task.id) == -1

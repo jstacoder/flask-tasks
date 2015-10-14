@@ -1,6 +1,9 @@
 from flask_xxl.basemodels import classproperty
 from ..models import sa,BaseMixin
 from flask import url_for
+from dateutil import parser
+
+p = parser
 
 class Task(BaseMixin):
     __table_args__ = (
@@ -12,6 +15,21 @@ class Task(BaseMixin):
     project = sa.orm.relation('Project',uselist=False,backref=sa.orm.backref('tasks',lazy='dynamic'))
     due_date = sa.Column(sa.DateTime)
     complete = sa.Column(sa.Boolean,default=False)
+
+
+    def __init__(self,*args,**kwargs):
+        if 'due_date' in kwargs:
+            dd = kwargs.pop('due_date')
+            if type(dd) == str or type(dd) == unicode:
+                dd = p.parse(dd[:-3])
+            kwargs['due_date'] = dd
+        super(Task,self).__init__(*args,**kwargs)
+
+    def save(self):
+        if type(self.due_date) == str or type(self.due_date) == unicode:
+            self.due_date = p.parse(self.due_date[:-3])
+        return super(Task,self).save()
+
 
     @classproperty
     def list_url(cls):
@@ -32,7 +50,7 @@ class Task(BaseMixin):
     def to_json(self,in_list=True,add_urls=True):
         opts = {}
         if self.due_date:
-            opts['due_date'] = self.due_date
+            opts['due_date'] = self.due_date.ctime()
         if self.project_id:
             opts['project'] = dict(
                     id=self.project_id,

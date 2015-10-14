@@ -2,6 +2,8 @@ import os
 import eventlet
 from eventlet import wsgi
 eventlet.monkey_patch()
+from psycogreen import eventlet as ev
+ev.patch_psycopg()
 from flask_tasks import get_app,settings,models
 from flask_tasks.socket import socket
 import socketio
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     app = main()
 
     port = int(os.environ.get('PORT',5544))
-    wsgi.server(eventlet.listen(('0.0.0.0', port)), app)
+    wsgi.server(eventlet.listen(('127.0.0.1', port)), app)
     
     #socket.run(app,host='0.0.0.0',port=port)
     #server = WSGIServer(('0.0.0.0',port),app)

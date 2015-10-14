@@ -1,13 +1,17 @@
 'use strict';
 
-var app = angular.module('app',[
+var app = window.angular.module('app',[
         'ngRoute','ipCookie','ngResource','app.socket',
         'ui.bootstrap','app.routes','app.projects',
         'app.projects.edit','app.tasks','app.projects.add',
-        'app.projects.delete','app.projects.list','ngTouch'
+        'app.projects.delete','app.projects.list','ngTouch',
+        'pusher-angular'
 ]);
 
-app.run(['$rootScope','projectFactory','getProject','$q',function($rootScope,projectFactory,getProject,$q){
+app.run(['p','$rootScope','projectFactory','getProject','$q',function(p,$rootScope,projectFactory,getProject,$q){
+    p.bind('test_channel','my_event',function(data){
+        console.log(data.message);
+    });
     $rootScope.counts = {};
 
     $rootScope.decrementCount = function(pid){
@@ -215,9 +219,17 @@ function MainCtrl(socket,$rootScope,$scope){
                 res.push(itm);
             }
         });
-        return res.length;
+        return res.length !== 0;
     };
-
+    self.getPrioritys = function(n){
+        return n ? $scope.prioritys(n) : $scope.priority_values;
+    };
+    self.setPriorityValue = function(n){
+        $scope.setPriority(n);
+    };
+    self.needsFilter = function(){
+        return $scope.needsFilter();
+    };
     
     socket.on('msg',function(data){
         console.log(data);
@@ -404,5 +416,4 @@ function closingAlertLinkFn($timeout){
         }
     };
 }
-
 

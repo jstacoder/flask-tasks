@@ -1,14 +1,22 @@
 from flask import views,jsonify,request
 from inflection import pluralize
 from flask import json,current_app
+import pusher
+pusher.http.json = json
 from gevent import spawn
 from ..models import Task
 from ...views import PostView,_jsonify
-from ...socket import socket,emit_message
+from ...socket import socket,emit_message,send_pusher_msg
+from psycogreen import eventlet as ev
+ev.patch_psycopg()
+from eventlet import patcher
+patcher.monkey_patch()
 
 
 def send_msg(msg,data,*args,**kwargs):
-    t = spawn(lambda: emit_message(msg,data,*args,**kwargs))
+    send_pusher_msg('task_event',msg,data)
+    t = spawn(emit_message,msg,json.dumps(data),*args,**kwargs)
+    print 'SENDING:',msg,str(data)
     t.start()
     return t
 

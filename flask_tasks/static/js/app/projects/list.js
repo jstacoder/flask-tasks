@@ -17,10 +17,12 @@ function deleteTask($http){
 }
 
 
-QuickAddCtrl.$inject = ['$scope','$modalInstance','addTaskToProject','$routeParams','$rootScope','project','$location'];
+QuickAddCtrl.$inject = ['$scope','$modalInstance','addTaskToProject','$routeParams','$rootScope','project','$location','p'];
 
-function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootScope,project,$location){
-    var self = this;
+function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootScope,project,$location,p){
+    var self = this,
+        channel = p.subscribe('task_event');
+
     self.project = project;
 
     resetTask();
@@ -39,8 +41,12 @@ function QuickAddCtrl($scope,$modalInstance,addTaskToProject,$routeParams,$rootS
         if(task.p_choices){
             task = extractTask(task);
         }
+        if(!task.project_id){
+            task.project_id = self.project.id;
+        }
         addTaskToProject(task).then(function(res){
             self.project.tasks.push(res.data);
+
             $rootScope.incrementCount(self.project.id);
             console.log(res);
             console.log('saving');
@@ -89,12 +95,15 @@ function updateTask($http){
     };
 }
 
-ProjListCtrl.$inject = ['project','$rootScope','$scope','updateTask','$q','$timeout','$modal','addTaskToProject','deleteTask','socket'];
+ProjListCtrl.$inject = ['project','$rootScope','$scope','updateTask','$q','$timeout','$modal','addTaskToProject','deleteTask','socket','p'];
 
-function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,addTaskToProject,deleteTask,socket){
-    var self = this;
+function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,addTaskToProject,deleteTask,socket,p){
+    var self = this,
+        channel = p.subscribe('task_event');
+
 
     self.needSave = false;
+    self.submitted = false;
     
     self.project = project;
     self.listTasks = [];
@@ -125,31 +134,40 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         });
         self.deletedTasks.push(id);
     });
-    socket.on('delete:task',function(data){
+    channel.bind('delete:task',function(data){
         console.log('deleting an item');
+        //$rootScope.decrementCount(self.project.id);
         if(self.deletedTasks.indexOf(data.item)===-1){
             self.deletedTasks.push(data.item);
         }
         $scope = resetListTasks($scope);
     });
-    socket.on('create:task',function(data){
-        console.log('RECEIVED CREATE SIGNAL',data);
-        var found = false;
-        angular.forEach(self.project.tasks,function(itm){
-            if(itm.id===data.id){
-                found = true;
+    channel.bind('create:task',function(data){
+        if(!self.submitted){
+            $rootScope.incrementCount(self.project.id);
+            console.log('RECEIVED CREATE SIGNAL',data);
+            var found = false;
+            angular.forEach(self.project.tasks,function(itm){
+                console.log(itm.id);
+                console.log(data.id);
+                console.log(data.id===itm.id);
+                console.log(data.id==itm.id);
+                if(itm.id===data.id){
+                    found = true;
+                }
+            });
+            if(!found){
+                //self.project.tasks.push(data);
+                $scope.listTasks.push(data);
             }
-        });
-        if(!found){
-            self.project.tasks.push(data);
+            $scope = resetListTasks($scope);
         }
-        $scope = resetListTasks($scope);
     });
-    socket.on('complete:task',function(data){
+    channel.bind('complete:task',function(data){
         console.log('RECEIVED COMPLETE SIGNAL',data);
         $scope = resetListTasks($scope);
     });
-    socket.on('update:task',function(data){
+    channel.bind('update:task',function(data){
         console.log('RECEIVED UPDATE SIGNAL',data);
         var updated = false,
             idx;
@@ -159,6 +177,11 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
                 self.project.tasks[i] = data;
             }
         });
+        if(data.complete){
+            $rootScope.decrementCount(self.project.id);
+        }else{
+            $rootScope.incrementCount(self.project.id);
+        }
         $scope = resetListTasks($scope);
     });
 
@@ -168,6 +191,7 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         });
     };
     self.quickAddSubmit = function(task){
+        self.submitted = true;
         addTaskToProject(task).then(function(res){
             self.project.tasks.push(res.data);
             $scope = resetListTasks($scope);
@@ -208,9 +232,12 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
     };
     
     $q.when(self.project.$promise).then(function(){
+        self.listTasks = $scope.listTasks || [];
         angular.forEach(self.project.tasks,function(itm){
             console.log(itm);
-            self.listTasks.push(itm);
+            if(self.listTasks.indexOf(itm)==-1){
+                self.listTasks.push(itm);
+            }
             console.log(self.listTasks);
         });
         $scope = resetListTasks($scope);

@@ -1,11 +1,24 @@
-var app = angular.module('app.socket',[]);
+var app = angular.module('app.socket',[]),
+    require,
+    io = angular.isDefined(require) ?  require('socket.io-client') : window.io;
 
-app.factory('socket',socket);
+app.factory('socket',socket)
+   .service('p',pFunc);
 
+
+
+pFunc.$inject = ['$pusher','$log','$rootScope'];
+
+function pFunc($pusher,$log,$rootScope){
+    var p = new Pusher('14d2f4c74704d4c4aadd',{encrypted:true});
+    Pusher.log = $log.log;
+
+    return $pusher(p);
+}
 socket.$inject = ['$rootScope','$window','$location'];
 
 function socket($rootScope,$window,$location){
-    var socket = $window.io.connect('http://'+$location.host()+":"+$location.port()+'/test');
+    var socket = io('http://'+$location.host()+":"+$location.port()+'/');
     return {
         on:function(eventName,cb){
             socket.on(eventName,function(){
@@ -26,5 +39,8 @@ function socket($rootScope,$window,$location){
             });
         }
     };
+    socket.on('connect',function(data){
+        console.log('CONNECTED!!!!');
+    });
 }
 

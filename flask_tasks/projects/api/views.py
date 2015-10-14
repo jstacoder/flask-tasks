@@ -1,4 +1,6 @@
 from flask import views,jsonify,request,make_response
+from psycogreen import eventlet as ev
+ev.patch_psycopg()
 from inflection import pluralize
 import json
 from ..models import Project

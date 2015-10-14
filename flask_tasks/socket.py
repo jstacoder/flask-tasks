@@ -1,11 +1,24 @@
 from flask_socketio import SocketIO,emit
 from flask import json
 from gevent import monkey,sleep,spawn
+from eventlet import patcher
+import pusher
+pusher.pusher.json = json
+
+p = pusher.Pusher(
+  app_id='147823',
+  key='14d2f4c74704d4c4aadd',
+  secret='ff0da80aa28bf9620bdd',
+  ssl=True,
+  port=443,
+)
+
+patcher.monkey_patch()
 
 
-monkey.patch_all()
+#monkey.patch_all()
 
-socket = SocketIO(async_mode='gevent')
+socket = SocketIO(async_mode='eventlet')
 
 
 @socket.on('msg')
@@ -28,5 +41,8 @@ def background_thread():
 #thread.start()
 
 
-def emit_message(name,data,ns='/test'):
+def emit_message(name,data,ns=''):
     return socket.emit(name,data,namespace=ns)
+
+def send_pusher_msg(channel,event_name,data):
+    p.trigger(channel,event_name,data)

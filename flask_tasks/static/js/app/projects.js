@@ -14,8 +14,10 @@ app.factory('projectFactory',projectFactory)
 
 
 function sortByPriority(){
-    return function(tasks){
-        console.log('PRI: ',tasks);
+    return function(tasks,debug){
+        if(debug){
+            console.log('PRI: ',tasks);
+        }
         var rtn = {
             1:[],
             2:[],

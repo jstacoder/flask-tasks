@@ -1,12 +1,14 @@
 from flask_router import FlaskRouter
 from flask_template_loader import FlaskTemplateLoader
 from flask_apps import FlaskApps
-from flask import Flask
+from flask import Flask,request
 from flask_xxl.filters import date_pretty
 from commands import getoutput
 from . import models
 import json
 import os.path as op
+from psycogreen import eventlet as ev
+ev.patch_psycopg()
 
 parent = op.realpath(op.dirname(__file__))
 
@@ -49,6 +51,12 @@ def get_app(settings=None,extensions=None,add_default_extensions=True,*args,**kw
 
     app.jinja_env.globals['assets'] = assets
     app.jinja_env.filters['date_pretty'] = date_pretty
+
+    @app.after_request
+    def af(res):
+        print request.environ['eventlet.input']
+        return res
+
     return app
 
 def main():
