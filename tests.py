@@ -1,3 +1,4 @@
+import os
 import json
 from flask import url_for, _app_ctx_stack as ctx
 from flask_tasks.messages import socket
@@ -265,4 +266,12 @@ class TestTaskApiTestCase(BaseCase):
                     res.pop(itm)
         expecting = expected_response
         self.assertEquals(res,expecting)
+
+    def test_js_tests(self):
+        from commands import getoutput
+        if not os.path.exists(os.path.join(os.getcwd(),'node_modules')):
+            getoutput('npm install && bower install')
+        result = getoutput('npm test')
+        print result
+        self.assertEquals(result.strip().split('\n')[-1],'# ok')
 

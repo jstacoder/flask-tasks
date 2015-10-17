@@ -5,6 +5,11 @@ from inflection import pluralize
 import json
 from ..models import Project
 from ...views import PostView,_jsonify
+from ...socket import send_pusher_msg
+
+
+def send_msg(msg,data,*args,**kwargs):
+    send_pusher_msg('task_event',msg,data)
 
 class ListProjectView(views.MethodView):
 
@@ -42,6 +47,7 @@ class AddProjectView(PostView):
     def post(self):
         self._process_post()
         proj = Project(**self.data).save().to_json()
+        send_msg('project:add',proj)
         return jsonify(**proj)
 
 class DeleteProjectView(PostView):
@@ -58,6 +64,7 @@ class DeleteProjectView(PostView):
                 success = False
             if success is not None and success:
                 rtn = jsonify(**dict(result='success',action='delete',item=self.data.get('item_id')))
+                send_msg('project:delete',self.data.get('item_id'))
             elif success is not None:
                 rtn = jsonify(**dict(result='error',action='error when attempting delete',item=self.data.get('item_id')))
             else:

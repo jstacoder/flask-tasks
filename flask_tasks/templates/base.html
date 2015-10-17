@@ -39,17 +39,21 @@
                 </div>
             </div>
             <div class=row>
-                <div class="col-md-2 well">
-                    {% block left_side_bar %}
-                    {% endblock %}
+                <div class="col-md-2">
+                    <div class=well>
+                        {% block left_side_bar %}
+                        {% endblock %}
+                    </div>
                 </div>
                 <div class="col-md-8">
                     {% block content %}
                     {% endblock %}
                 </div>
-                <div class="col-md-2 well">
-                    {% block right_side_bar %}
-                    {% endblock %}
+                <div class="col-md-2">
+                    <div class=well>
+                        {% block right_side_bar %}
+                        {% endblock %}
+                    </div>
                 </div>
             </div>
         </div>   
@@ -88,7 +92,7 @@
                         <fieldset>
                             <div class="col-xs-12 form-group">
                                 <label>Add To </label>
-                                <input class="form-control" ng-model=ctrl.project readonly/>
+                                <input class="form-control" ng-model=ctrl.project.name readonly/>
                              </div>
                              <div class="col-xs-12 form-group">
                                <label>Task Name</label>

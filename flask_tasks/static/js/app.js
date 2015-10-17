@@ -12,6 +12,32 @@ app.run(['p','$rootScope','projectFactory','getProject','$q',function(p,$rootSco
     p.bind('test_channel','my_event',function(data){
         console.log(data.message);
     });
+    var channel = p.subscribe('task_event');
+    channel.bind('project:delete',function(data){
+        console.log(data);
+        console.log('DELETED A PROJECT IN THE GLOBAL ROOTSCOPE');
+        angular.forEach($rootScope.projects,function(itm,idx){
+            if(itm.id==parseInt(data)){
+                $rootScope.projects.splice(idx,0);
+            }
+        });
+    });
+    channel.bind('project:add',function(data){        
+        console.log(data);
+        console.log('CREATED A PROJECT IN THE GLOBAL ROOTSCOPE');
+        var found = false;
+        angular.forEach($rootScope.projects,function(itm){
+            if(itm.id==data.id){
+                console.log('ALREADY ADDED A NEW PROJECT');
+                found = true;
+            }
+        });
+        if(!found){
+            console.log('ADDING A NEW PROJECT');
+            $rootScope.projects.push(data);
+            $rootScope.setActiveCount(data.id);
+        }
+    });
     $rootScope.counts = {};
 
     $rootScope.decrementCount = function(pid){

@@ -4,7 +4,7 @@
   "description": "task app, with backend + api written using flask and best practices",
   "main": "t.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/node-ng/node-ng.js jstests.js"
   },
   "repository": {
     "type": "git",
