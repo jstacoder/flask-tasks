@@ -41,11 +41,21 @@ app.run(['p','$rootScope','projectFactory','getProject','$q',function(p,$rootSco
     $rootScope.counts = {};
 
     $rootScope.decrementCount = function(pid){
-        $rootScope.counts[pid]--;
+        //$rootScope.counts[pid]--;
+        realReset();
     };
     $rootScope.incrementCount = function(pid){
-        $rootScope.counts[pid]++;
+        //$rootScope.counts[pid]++;
+        realReset();
     };
+
+    function realReset(){
+        $rootScope.counts = {};
+
+        angular.forEach($rootScope.projects,function(itm){
+            $rootScope.counts[itm.pid] = itm.tasks.length;
+        });
+    }
     function addRootProjects(){
         $rootScope.projects = [];
         projectFactory.query(function(res){
