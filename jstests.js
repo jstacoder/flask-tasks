@@ -1,7 +1,10 @@
 
 var tape = require('tape'),
     q = require('q'),
-    mainTest = function(){ var document = require('jsdom').jsdom('<html><head></head><body></body></html>'), window = document.defaultView; require('angular'); require('./socket.io.js'); window.io = require('socket.io-client'); require('./flask_tasks/static/js/app.js'); require('./flask_tasks/static/js/app/projects.js'); require('./flask_tasks/static/js/app/tasks.js');
+    mainTest = function(){ /*var document = require('jsdom').jsdom('<html><head></head><body></body></html>'), window = document.defaultView; require('angular'); require('./socket.io.js'); window.io = require('socket.io-client');*/
+    require('./flask_tasks/static/js/app.js'); 
+    require('./flask_tasks/static/js/app/projects.js'); 
+    require('./flask_tasks/static/js/app/tasks.js');
     require('./flask_tasks/static/js/app/routes.js');
     require('./flask_tasks/static/js/app/socket.js');
     require('./pusher.min.js');
