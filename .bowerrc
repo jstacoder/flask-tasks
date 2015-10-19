@@ -1,0 +1,6 @@
+{
+    "directory":"static/vendor",
+    "strict-ssl":false,
+    "analytics":false,
+    "tmp":".bower/tmp"
+}
