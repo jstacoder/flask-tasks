@@ -7,7 +7,7 @@ install:
     - npm install
     - bower install
     #- "pip install . -q"
-    - "pip install -r requirements.txt -vvv"      
+    - "pip install -r requirements.txt -q --user --no-use-wheel"      
     #- "python setup.py install"
     - "python setup_db.py"
 
