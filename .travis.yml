@@ -1,5 +1,7 @@
 language: python
 
+require:sudo
+
 python:
     - "2.7"
 
@@ -7,7 +9,7 @@ install:
     - npm install
     - bower install
     #- "pip install . -q"
-    - "pip install -r requirements.txt -q --user --no-use-wheel"      
+    - "pip install -r requirements.txt -q --user --no-use-wheel --allow-external honcho --allow-unverified honcho"      
     #- "python setup.py install"
     - "python setup_db.py"
 
