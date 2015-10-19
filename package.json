@@ -21,7 +21,8 @@
     "angular-node-updated": "^2.0.0",
     "node-ng": "0.0.8",
     "pusher-angular": "^0.1.8",
-    "q": "^1.4.1"
+    "q": "^1.4.1",
+    "bower":"*"
   },
   "devDependencies": {
     "tape": "^4.2.1"
