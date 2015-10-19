@@ -19,7 +19,6 @@
   "dependencies": {
     "angular": "^1.4.7",
     "angular-node-updated": "^2.0.0",
-    "benv": "^1.0.0",
     "node-ng": "0.0.8",
     "pusher-angular": "^0.1.8",
     "q": "^1.4.1"
