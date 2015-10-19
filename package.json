@@ -19,7 +19,7 @@
   "dependencies": {
     "angular": "^1.4.7",
     "angular-node-updated": "^2.0.0",
-    "node-ng": "0.0.9",
+    "node-ng": "0.0.10",
     "pusher-angular": "^0.1.8",
     "q": "^1.4.1",
     "bower":"*"
