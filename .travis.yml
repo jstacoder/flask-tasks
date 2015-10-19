@@ -4,6 +4,8 @@ python:
     - "2.7"
 
 install:
+    - npm install
+    - bower install
     #- "pip install . -q"
     - "pip install -r requirements.txt -vvv"      
     #- "python setup.py install"
@@ -20,9 +22,6 @@ services:
     #- mysql-server
 
 #install deps
-install:
-    - npm install
-    - bower install
 
 cache:
     directories:
