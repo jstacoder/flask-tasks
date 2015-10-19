@@ -19,8 +19,6 @@ Flask-SQLAlchemy==2.0
 flask-template-loader==0.0.3
 Flask-WTF==0.10.2
 flask-xxl==0.9.8
-gevent==1.0.2
-gevent-websocket==0.9.5
 greenlet==0.4.9
 grequests==0.2.0
 gunicorn==19.3.0

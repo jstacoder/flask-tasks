@@ -17,13 +17,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.4.6",
-    "angular-route": "~1.4.6",
-    "angular-ui-bootstrap": "~0.13.4",
     "bootstrap": "~3.3.5",
-    "angular-cache": "~4.3.2",
-    "angular-cookie": "~4.0.9",
-    "angular-resource": "~1.4.6",
     "less.js": "~2.5.1"
   },
   "ignoredDependencies": [

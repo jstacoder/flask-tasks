@@ -13,11 +13,11 @@ var tape = require('tape'),
     require('./flask_tasks/static/js/app/projects/list.js');
     require('./flask_tasks/static/js/app/projects/edit.js');
     require('./flask_tasks/static/js/app/projects/delete.js');
-    require('./flask_tasks/static/vendor/angular-route/angular-route.js');
-    require('./flask_tasks/static/vendor/angular/angular-touch.js');
-    require('./flask_tasks/static/vendor/angular-cookie/angular-cookie.js');
-    require('./flask_tasks/static/vendor/angular-resource/angular-resource.js');
-    require('./flask_tasks/static/vendor/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js');
+    require('angular-route');
+    require('angular-touch');
+    require('angular-cookie');
+    require('angular-resource');
+    require('angular-ui-bootstrap');
 
     var angular = require('angular-node-updated');
     var inject = ng_bootstrap('app');
