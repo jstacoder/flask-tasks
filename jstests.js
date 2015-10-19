@@ -19,7 +19,7 @@ var tape = require('tape'),
     require('angular-resource');
     require('angular-ui-bootstrap');
 
-    var angular = require('angular-node-updated');
+    //var angular = require('angular-node-updated');
     var inject = ng_bootstrap('app');
     var $inject = ng_injector('app');
     //var $injector = angular.injector([angular.module('app',[]).name]);
