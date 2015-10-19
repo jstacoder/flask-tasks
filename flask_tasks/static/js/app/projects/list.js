@@ -144,7 +144,6 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
         $scope = resetListTasks($scope);
     });
     channel.bind('create:task',function(data){
-        if(!self.submitted){
             console.log('RECEIVED CREATE SIGNAL',data);
             var found = false;
             angular.forEach(self.project.tasks,function(itm){
@@ -162,7 +161,6 @@ function ProjListCtrl(project,$rootScope,$scope,updateTask,$q,$timeout,$modal,ad
                 $rootScope.incrementCount(self.project.id);
             }
             $scope = resetListTasks($scope);
-        }
     });
     channel.bind('complete:task',function(data){
         console.log('RECEIVED COMPLETE SIGNAL',data);

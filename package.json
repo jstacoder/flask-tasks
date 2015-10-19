@@ -18,13 +18,15 @@
   "homepage": "https://github.com/jstacoder/flask-tasks",
   "dependencies": {
     "angular": "^1.4.7",
+    "angular-touch": "^1.4.7",
     "angular-route": "~1.4.7",
     "angular-ui-bootstrap": "~0.13.4",
     "angular-cache": "~4.3.2",
-    "angular-cookie": "~4.0.9",
+    "angular-cookie": "*",
     "angular-resource": "~1.4.7",
     "angular-node-updated": "^2.0.0",
     "node-ng": "0.0.10",
+    "bootstrap":"3.x",
     "pusher-angular": "^0.1.8",
     "q": "^1.4.1",
     "bower":"*"

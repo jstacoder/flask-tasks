@@ -18,9 +18,43 @@ app.run(['p','$rootScope','projectFactory','getProject','$q',function(p,$rootSco
         console.log('DELETED A PROJECT IN THE GLOBAL ROOTSCOPE');
         angular.forEach($rootScope.projects,function(itm,idx){
             if(itm.id==parseInt(data)){
-                $rootScope.projects.splice(idx,0);
+                console.log('removing',$rootScope.projects.splice(idx,0));
             }
         });
+    });
+    channel.bind('delete:task',function(data){
+        
+        var proj = $rootScope.projects.filter(function(itm){
+            return itm.id==data.item.project.id;
+        })[0],
+            found = false,
+            _i;
+        angular.forEach(proj.tasks,function(itm,idx){
+            if(itm.id==data.item.id){
+                found = true;
+                _i = idx;
+            }
+        }); 
+        if(found){
+            $rootScope.projects[$rootScope.projects.indexOf(proj)].tasks.splice(_i,0)
+        }
+        realReset();
+    });
+    channel.bind('create:task',function(data){
+        var proj = $rootScope.projects.filter(function(itm){
+            return itm.id==data.project.id;
+        })[0],
+            found = false;
+        angular.forEach(proj.tasks,function(itm){
+            if(itm.id==data.id){
+                found = true;
+            }
+        }); 
+        if(!found){
+            console.log('ADDING A TASK TO A PROJECT');
+            $rootScope.projects[$rootScope.projects.indexOf(proj)].tasks.push(data);
+        }
+        realReset();
     });
     channel.bind('project:add',function(data){        
         console.log(data);
@@ -36,6 +70,7 @@ app.run(['p','$rootScope','projectFactory','getProject','$q',function(p,$rootSco
             console.log('ADDING A NEW PROJECT');
             $rootScope.projects.push(data);
             $rootScope.setActiveCount(data.id);
+            realReset();
         }
     });
     $rootScope.counts = {};
@@ -53,8 +88,9 @@ app.run(['p','$rootScope','projectFactory','getProject','$q',function(p,$rootSco
         $rootScope.counts = {};
 
         angular.forEach($rootScope.projects,function(itm){
-            $rootScope.counts[itm.pid] = itm.tasks.length;
+            $rootScope.counts[itm.id] = itm.tasks.length;
         });
+        console.log($rootScope.projects);
     }
     function addRootProjects(){
         $rootScope.projects = [];
