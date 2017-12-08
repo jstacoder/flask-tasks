@@ -2,7 +2,7 @@ from flask_tasks import get_app,settings,models
 from flask_tasks.tasks.models import Task
 from flask_tasks.projects.models import Project
 from datetime import timedelta,datetime
-from random import choice
+from random import choice, shuffle
 
 def get_days_due():
     factors = [1,2,3,4,5,6,7,8,9]
