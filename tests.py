@@ -7,13 +7,14 @@ from flask_tasks import get_app,settings,models
 from flask_tasks.tasks.models import Task
 from flask_tasks.projects.models import Project
 from seed import seed
+import nose
 
 excludes = [
     'url',
     'tasks'
 ]
 
-TASK_VIEW_API_RESPONSE = { 
+TASK_VIEW_API_RESPONSE = {
         u'complete': False,
         u'id': 2,
         u'name': u'task2',
@@ -45,7 +46,7 @@ ADD_PROJ_API_RESPONSE = {
     u'id': 2,
     u'name': u"test2",
 }
-        
+
 ADD_TASK_API_RESPONSE = {
     u'complete': False,
     u'id': 11,
@@ -127,7 +128,7 @@ class TestTaskApiTestCase(BaseCase):
         res = self.client.get('/api/v1/tasks/view/2').data
         res = json.loads(res)
         res.pop('due_date')
-        res.get('project').pop('url')        
+        res.get('project').pop('url')
         self.assertEqual(res,TASK_VIEW_API_RESPONSE)
 
     def test_view_one_project(self):
@@ -135,7 +136,7 @@ class TestTaskApiTestCase(BaseCase):
         res = json.loads(res)
         res.pop('tasks')
         self.assertEqual(res,PROJ_VIEW_API_RESPONSE)
-                        
+
     def test_add_project_form(self):
         self._test_add_form('projects',ADD_PROJ_API_RESPONSE,excludes=excludes,name='test2')
 
@@ -164,7 +165,7 @@ class TestTaskApiTestCase(BaseCase):
         res = self.client.post('/api/v1/projects/delete',data=data).data
         want = json.loads(json.dumps(dict(result='success',action='delete',item='1')))
         self.assertEquals(json.loads(res),want)
-                
+
     def test_delete_task_success(self):
         data = dict(item_id=2)
         res = self.client.post('/api/v1/tasks/delete',data=data).data
@@ -215,7 +216,7 @@ class TestTaskApiTestCase(BaseCase):
     '''
     def _test_add_form(self,model,expected_response,excludes=None,**kwargs):
         data = dict(**kwargs)
-        res = self._send_add_request(model,data=data)        
+        res = self._send_add_request(model,data=data)
         if excludes:
             for itm in excludes:
                 if itm in res:
@@ -225,7 +226,7 @@ class TestTaskApiTestCase(BaseCase):
 
     def test_add_project_then_task(self):
         data = json.dumps(dict(name='test'))
-        res = self._send_add_request('projects',data,content_type='application/json')        
+        res = self._send_add_request('projects',data,content_type='application/json')
         proj_id = res.get('id')
         data = json.dumps(dict(name='test-task1',project_id=proj_id))
         res = self._send_add_request('tasks',data,content_type='application/json')
@@ -249,7 +250,7 @@ class TestTaskApiTestCase(BaseCase):
 
     def _test_add_data(self,model,expected_response,excludes=None,**kwargs):
         data = dict(**kwargs)
-        res = self._send_add_request(model,json.dumps(data))                
+        res = self._send_add_request(model,json.dumps(data))
         if excludes:
             for itm in excludes:
                 if itm in res:
@@ -259,7 +260,7 @@ class TestTaskApiTestCase(BaseCase):
 
     def _test_add_json(self,model,expected_response,excludes=None,**kwargs):
         data = json.dumps(dict(**kwargs))
-        res = self._send_add_request(model,data,content_type='application/json')        
+        res = self._send_add_request(model,data,content_type='application/json')
         if excludes:
             for itm in excludes:
                 if itm in res:
@@ -275,3 +276,6 @@ class TestTaskApiTestCase(BaseCase):
         print result
         self.assertEquals(result.strip().split('\n')[-1],'# ok')
 
+
+if __name__ == "__main__":
+    nose.main()

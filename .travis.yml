@@ -33,4 +33,5 @@ cache:
 
 # tests
 script: 
-    - "nosetests tests"
+#- "nosetests tests"
+    - "python tests.py"
