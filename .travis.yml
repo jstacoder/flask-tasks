@@ -9,7 +9,7 @@ install:
     - npm install -g bower
     - npm install
     - bower install --allow-root
-    - pip install nose
+    - pip install nose --user -I
     #- "pip install . -q"
     - "pip install -r requirements.txt --user --no-use-wheel --allow-external honcho --allow-unverified honcho"
     #- "python setup.py install"
