@@ -71,7 +71,7 @@ backlog = 2048
 #       A positive integer. Generally set in the 1-5 seconds range.
 #
 
-workers = 2 
+workers = 2
 worker_class = 'eventlet'
 worker_connections = 1500
 timeout = 35
@@ -113,7 +113,7 @@ spew = False
 #
 #   umask - A mask for file permissions written by Gunicorn. Note that
 #       this affects unix socket permissions.
-#
+
 #       A valid value for the os.umask(mode) call or a string
 #       compatible with int(value, 0) (0 means Python guesses
 #       the base, so values like "0", "0xFF", "0022" are valid
