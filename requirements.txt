@@ -1,7 +1,7 @@
 alembic==0.6.7
 blinker==1.4
 cffi==1.2.1
-cryptography==1.0.2
+cryptography==3.2
 dateutils==0.6.6
 decorator==4.0.2
 enum34==1.0.4
