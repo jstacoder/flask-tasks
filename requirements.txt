@@ -5,7 +5,7 @@ cryptography==1.0.2
 dateutils==0.6.6
 decorator==4.0.2
 enum34==1.0.4
-eventlet==0.17.4
+eventlet==0.31.0
 Flask==0.10.1
 Flask-Alembic==1.0.2
 flask-apps==0.0.2
